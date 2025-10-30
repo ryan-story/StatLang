@@ -1,0 +1,162 @@
+{
+    "DATA Step": {
+        "prefix": "data",
+        "body": [
+            "data ${1:dataset_name};",
+            "    set ${2:input_dataset};",
+            "    ${3:/* statements */}",
+            "run;"
+        ],
+        "description": "DATA step"
+    },
+    "PROC MEANS": {
+        "prefix": "procmeans",
+        "body": [
+            "proc means data=${1:dataset};",
+            "    var ${2:variables};",
+            "    ${3:/* options */}",
+            "run;"
+        ],
+        "description": "PROC MEANS for descriptive statistics"
+    },
+    "PROC FREQ": {
+        "prefix": "procfreq",
+        "body": [
+            "proc freq data=${1:dataset};",
+            "    tables ${2:variables};",
+            "    ${3:/* options */}",
+            "run;"
+        ],
+        "description": "PROC FREQ for frequency tables"
+    },
+    "PROC PRINT": {
+        "prefix": "procprint",
+        "body": [
+            "proc print data=${1:dataset};",
+            "    var ${2:variables};",
+            "    ${3:/* options */}",
+            "run;"
+        ],
+        "description": "PROC PRINT to display data"
+    },
+    "PROC SORT": {
+        "prefix": "procsort",
+        "body": [
+            "proc sort data=${1:dataset};",
+            "    by ${2:variables};",
+            "    ${3:/* options */}",
+            "run;"
+        ],
+        "description": "PROC SORT to sort data"
+    },
+    "PROC CONTENTS": {
+        "prefix": "proccontents",
+        "body": [
+            "proc contents data=${1:dataset};",
+            "    ${2:/* options */}",
+            "run;"
+        ],
+        "description": "PROC CONTENTS to show dataset information"
+    },
+    "Macro Variable": {
+        "prefix": "let",
+        "body": [
+            "%let ${1:macrovar} = ${2:value};"
+        ],
+        "description": "Define a macro variable"
+    },
+    "Macro Definition": {
+        "prefix": "macro",
+        "body": [
+            "%macro ${1:macroname}(${2:parameters});",
+            "    ${3:/* macro body */}",
+            "%mend ${1:macroname};"
+        ],
+        "description": "Define a macro"
+    },
+    "IF-THEN-ELSE": {
+        "prefix": "if",
+        "body": [
+            "if ${1:condition} then",
+            "    ${2:/* statement */};",
+            "else",
+            "    ${3:/* statement */};"
+        ],
+        "description": "IF-THEN-ELSE statement"
+    },
+    "DO Loop": {
+        "prefix": "do",
+        "body": [
+            "do ${1:i} = ${2:1} to ${3:10};",
+            "    ${4:/* loop body */}",
+            "end;"
+        ],
+        "description": "DO loop"
+    },
+    "PROC REG": {
+        "prefix": "procreg",
+        "body": [
+            "proc reg data=${1:dataset};",
+            "    model ${2:dependent} = ${3:independent};",
+            "    ${4:/* output statements */}",
+            "run;"
+        ],
+        "description": "PROC REG for linear regression"
+    },
+    "PROC SQL": {
+        "prefix": "procsql",
+        "body": [
+            "proc sql;",
+            "    select ${1:columns}",
+            "    from ${2:table};",
+            "quit;"
+        ],
+        "description": "PROC SQL for SQL queries"
+    },
+    "PROC SURVEYSELECT": {
+        "prefix": "procsurvey",
+        "body": [
+            "proc surveyselect data=${1:dataset}",
+            "    method=srs",
+            "    samprate=${2:0.1}",
+            "    out=${3:output_dataset};",
+            "run;"
+        ],
+        "description": "PROC SURVEYSELECT for random sampling"
+    },
+    "PROC UNIVARIATE": {
+        "prefix": "procunivariate",
+        "body": [
+            "proc univariate data=${1:dataset};",
+            "    var ${2:variables};",
+            "    ${3:/* options */}",
+            "run;"
+        ],
+        "description": "PROC UNIVARIATE for detailed univariate analysis"
+    },
+    "PROC CORR": {
+        "prefix": "proccorr",
+        "body": [
+            "proc corr data=${1:dataset};",
+            "    var ${2:variables};",
+            "    ${3:/* options */}",
+            "run;"
+        ],
+        "description": "PROC CORR for correlation analysis"
+    },
+    "PROC LANGUAGE": {
+        "prefix": "proclanguage",
+        "body": [
+            "proc language prompt=\"${1:your prompt here}\";",
+            "run;"
+        ],
+        "description": "PROC LANGUAGE for LLM integration"
+    },
+    "TITLE Statement": {
+        "prefix": "title",
+        "body": [
+            "title \"${1:Your Title Here}\";"
+        ],
+        "description": "TITLE statement for output formatting"
+    }
+}

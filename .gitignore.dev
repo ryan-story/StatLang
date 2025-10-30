@@ -1,0 +1,14 @@
+# StatLangDev repo ignores (minimal)
+
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# Keep build artifacts and logs for diagnostics
+# (intentionally not ignoring build/, dist/, *.egg-info/, logs)
+
+.ipynb_checkpoints/
+.vscode/
+
+vscode-extension/node_modules/

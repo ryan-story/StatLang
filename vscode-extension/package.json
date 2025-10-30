@@ -1,0 +1,164 @@
+{
+  "name": "statlang",
+  "displayName": "StatLang: Statistical Scripting Notebook",
+  "description": "Run StatLang scripts in VS Code with a fast, Python-powered interpreter.",
+  "version": "0.2.3",
+  "publisher": "RyanBlakeStory",
+  "author": {
+    "name": "Ryan Story",
+    "email": "ryan@stryve.com",
+    "url": "https://github.com/ryan-story"
+  },
+  "homepage": "https://github.com/ryan-story/StatLang",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryan-story/StatLang.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ryan-story/StatLang/issues"
+  },
+  "license": "MIT",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "statistics",
+    "data-analysis",
+    "python",
+    "sas-like",
+    "statistical-computing"
+  ],
+  "activationEvents": [
+    "onLanguage:statlang",
+    "onNotebook:jupyter-notebook"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "statlang",
+        "aliases": [
+          "StatLang",
+          "statlang"
+        ],
+        "extensions": [
+          ".statlang"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "notebooks": [
+      {
+        "type": "statlang-notebook",
+        "displayName": "StatLang Notebook",
+        "selector": [
+          {
+            "filenamePattern": "*.stlnb"
+          }
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "statlang",
+        "scopeName": "source.statlang",
+        "path": "./syntaxes/statlang.tmLanguage.json"
+      },
+      {
+        "scopeName": "source.statlang",
+        "path": "./syntaxes/statlang.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.statlang": "statlang"
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "statlang",
+        "path": "./snippets/statlang.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "statlang.runFile",
+        "title": "Run StatLang File",
+        "category": "StatLang",
+        "icon": "$(play)"
+      },
+      {
+        "command": "statlang.runSelection",
+        "title": "Run Selection",
+        "category": "StatLang",
+        "icon": "$(play-circle)"
+      },
+      {
+        "command": "statlang.checkSyntax",
+        "title": "Check Syntax",
+        "category": "StatLang",
+        "icon": "$(check)"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "statlang.runFile",
+          "when": "resourceExtname == .statlang",
+          "group": "navigation"
+        },
+        {
+          "command": "statlang.runSelection",
+          "when": "resourceExtname == .statlang && editorHasSelection",
+          "group": "navigation"
+        },
+        {
+          "command": "statlang.checkSyntax",
+          "when": "resourceExtname == .statlang",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "statlang.runFile",
+          "when": "resourceExtname == .statlang",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "StatLang",
+      "properties": {
+        "statlang.pythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to Python executable. If not specified, the extension will try to find Python automatically."
+        },
+        "statlang.runtimePath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to StatLang runner script. If not specified, the extension will try to find it automatically."
+        },
+        "statlang.showOutputOnRun": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show output channel when running StatLang code."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.60.0",
+    "@types/node": "16.x",
+    "typescript": "^4.4.3"
+  }
+}
