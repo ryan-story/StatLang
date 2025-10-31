@@ -1,5 +1,5 @@
 """
-Expression Evaluator for Open-SAS
+Expression Evaluator for StatLang
 
 This module provides functionality to evaluate SAS expressions
 for variable assignments, IF/THEN/ELSE statements, and other

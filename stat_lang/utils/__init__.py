@@ -1,5 +1,5 @@
 """
-Utility functions for Open-SAS
+Utility functions for StatLang
 
 This module contains utility functions for expression parsing,
 data manipulation, and other helper functions.

@@ -1,5 +1,5 @@
 """
-DATA Step Parser for Open-SAS
+DATA Step Parser for StatLang
 
 This module parses SAS DATA step syntax and converts it to executable
 Python operations on DataFrames.

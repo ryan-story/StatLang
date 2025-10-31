@@ -1,5 +1,5 @@
 """
-PROC CONTENTS Implementation for Open-SAS
+PROC CONTENTS Implementation for StatLang
 
 This module implements SAS PROC CONTENTS functionality for displaying
 dataset metadata and variable information.

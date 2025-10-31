@@ -1,5 +1,5 @@
 """
-SAS Parser Module for Open-SAS
+StatLang Parser Module
 
 This module contains parsers for SAS syntax including DATA steps,
 PROC procedures, and macro language constructs.

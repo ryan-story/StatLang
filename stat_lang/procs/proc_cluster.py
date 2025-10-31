@@ -1,5 +1,5 @@
 """
-PROC CLUSTER Implementation for Open-SAS
+PROC CLUSTER Implementation for StatLang
 
 This module implements SAS PROC CLUSTER functionality for clustering analysis
 including k-means, hierarchical clustering, and HDBSCAN.

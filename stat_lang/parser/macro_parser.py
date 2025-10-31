@@ -1,5 +1,5 @@
 """
-Macro Parser for Open-SAS
+Macro Parser for StatLang
 
 This module handles SAS macro language processing including
 macro variable resolution, macro definitions, and macro calls.

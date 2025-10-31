@@ -1,5 +1,5 @@
 """
-PROC FACTOR Implementation for Open-SAS
+PROC FACTOR Implementation for StatLang
 
 This module implements SAS PROC FACTOR functionality for principal component
 analysis (PCA) and factor analysis using scikit-learn.

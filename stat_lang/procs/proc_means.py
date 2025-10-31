@@ -1,5 +1,5 @@
 """
-PROC MEANS Implementation for Open-SAS
+PROC MEANS Implementation for StatLang
 
 This module implements SAS PROC MEANS functionality using pandas
 for descriptive statistics calculations.

@@ -1,5 +1,5 @@
 """
-PROC CORR Implementation for Open-SAS
+PROC CORR Implementation for StatLang
 
 This module implements SAS PROC CORR functionality for correlation analysis
 including Pearson, Spearman, and Kendall correlation coefficients.

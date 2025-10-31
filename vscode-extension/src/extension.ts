@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(runFileCommand, runSelectionCommand, checkSyntaxCommand);
     
     // Note: VS Code notebooks use the Jupyter kernel directly
-    // The Open-SAS kernel is already installed and should be available
+    // The StatLang kernel is already installed and should be available
     // in VS Code's kernel selector for .ipynb files
     
     // Show output channel on first activation

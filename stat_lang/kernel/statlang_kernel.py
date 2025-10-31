@@ -13,7 +13,7 @@ import os
 import tempfile
 from pathlib import Path
 from contextlib import redirect_stdout, redirect_stderr
-from ipykernel.ipkernel import IPythonKernel
+from ipykernel.kernelbase import Kernel
 from stat_lang import SASInterpreter
 
 # Set up logging (WARNING level to suppress INFO messages)
@@ -30,7 +30,7 @@ logging.basicConfig(
 logger = logging.getLogger('StatLangKernel')
 
 
-class StatLangKernel(IPythonKernel):
+class StatLangKernel(Kernel):
     """Jupyter kernel for StatLang."""
     
     implementation = 'statlang'
@@ -50,13 +50,22 @@ class StatLangKernel(IPythonKernel):
     banner = "StatLang Kernel - Python-based statistical scripting language"
     
     def __init__(self, **kwargs):
-        logger.info(f"StatLangKernel initializing... CWD: {os.getcwd()}")
+        import traceback
+        logger.info("=" * 80)
+        logger.info("StatLangKernel __init__ called - Kernel being created/recreated")
+        logger.info(f"CWD: {os.getcwd()}")
+        logger.info("Stack trace:")
+        for line in traceback.format_stack()[-5:-1]:
+            logger.info(line.strip())
+        logger.info("=" * 80)
+        
         super().__init__(**kwargs)
         try:
             self.interpreter = SASInterpreter()
-            # IPythonKernel initializes execution_count, but ensure it starts at 1
-            if not hasattr(self, 'execution_count') or self.execution_count == 0:
-                self.execution_count = 1
+            # Kernel base class initializes execution_count, but ensure it starts at 0
+            # First execution will increment it to 1, second to 2, etc.
+            if not hasattr(self, 'execution_count') or self.execution_count is None:
+                self.execution_count = 0
             self.output_buffer = io.StringIO()
             self.error_buffer = io.StringIO()
             self.datasets_before_execution = set()
@@ -75,27 +84,21 @@ class StatLangKernel(IPythonKernel):
         logger.info(f"Code lines: {code.split(chr(10))}")
         logger.info(f"silent={silent}, store_history={store_history}, allow_stdin={allow_stdin}")
         
-        # Get current execution count BEFORE incrementing
-        exec_count = self.execution_count
-        logger.info(f"Current execution_count before increment: {exec_count}")
+        # Ensure execution_count is initialized as a number (not None)
+        if not hasattr(self, 'execution_count') or self.execution_count is None:
+            self.execution_count = 0
         
-        # Publish execute_input with current count
-        if not silent:
-            try:
-                logger.info(f"publish_execute_input count={exec_count}")
-                self._publish_execute_input(code, exec_count)
-            except Exception as e:
-                logger.warning(f"Failed to publish execute_input: {e}")
+        logger.info(f"Current execution_count: {self.execution_count}")
         
-        # Skip empty cells
+        # Skip empty cells - still need to increment
         if not code.strip():
-            logger.info("Empty cell detected, returning ok status")
-            # Increment execution count for next cell
-            self.execution_count = exec_count + 1
-            logger.info(f"execute_reply ok count={exec_count}, next will be {self.execution_count}")
+            logger.info("Empty cell detected, incrementing and returning ok status")
+            # Increment execution count
+            self.execution_count += 1
+            logger.info(f"execute_reply ok, count incremented to {self.execution_count}")
             return {
                 'status': 'ok',
-                'execution_count': exec_count,
+                'execution_count': self.execution_count,
                 'payload': [],
                 'user_expressions': {},
             }
@@ -117,10 +120,11 @@ class StatLangKernel(IPythonKernel):
                         'text': error_msg
                     })
                 # Increment execution count even on initialization error
-                self.execution_count = exec_count + 1
+                self.execution_count += 1
+                logger.info(f"execute_reply error, count incremented to {self.execution_count}")
                 return {
                     'status': 'error',
-                    'execution_count': exec_count,
+                    'execution_count': self.execution_count,
                     'ename': 'StatLangError',
                     'evalue': error_msg,
                     'traceback': [error_msg]
@@ -175,12 +179,12 @@ class StatLangKernel(IPythonKernel):
                     self.interpreter._suppress_dataset_display = False
             
             logger.info("Returning successful execution result")
-            # Increment execution count for next cell
-            self.execution_count = exec_count + 1
-            logger.info(f"execute_reply ok count={exec_count}, next will be {self.execution_count}")
+            # Increment execution count AFTER successful execution
+            self.execution_count += 1
+            logger.info(f"execute_reply ok, count incremented to {self.execution_count}")
             return {
                 'status': 'ok',
-                'execution_count': exec_count,
+                'execution_count': self.execution_count,
                 'payload': [],
                 'user_expressions': {},
             }
@@ -200,11 +204,11 @@ class StatLangKernel(IPythonKernel):
             
             logger.info("Returning error execution result")
             # Increment execution count even on error
-            self.execution_count = exec_count + 1
-            logger.info(f"execute_reply error count={exec_count}, next will be {self.execution_count}")
+            self.execution_count += 1
+            logger.info(f"execute_reply error, count incremented to {self.execution_count}")
             return {
                 'status': 'error',
-                'execution_count': exec_count,
+                'execution_count': self.execution_count,
                 'ename': 'StatLangError',
                 'evalue': str(e),
                 'traceback': [traceback.format_exc()]

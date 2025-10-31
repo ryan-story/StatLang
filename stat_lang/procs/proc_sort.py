@@ -1,5 +1,5 @@
 """
-PROC SORT Implementation for Open-SAS
+PROC SORT Implementation for StatLang
 
 This module implements SAS PROC SORT functionality for sorting
 datasets by specified variables.

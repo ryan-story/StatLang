@@ -1,5 +1,5 @@
 """
-PROC Parser for Open-SAS
+PROC Parser for StatLang
 
 This module parses SAS PROC procedure syntax and extracts parameters
 for execution by the appropriate PROC implementation.

@@ -1,5 +1,5 @@
 """
-Error Handler for Open-SAS
+Error Handler for StatLang
 
 This module provides comprehensive error handling and validation
 for SAS code execution.

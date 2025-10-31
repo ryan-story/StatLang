@@ -1,5 +1,5 @@
 """
-PROC SQL Implementation for Open-SAS
+PROC SQL Implementation for StatLang
 
 This module implements SAS PROC SQL functionality for SQL query processing
 using DuckDB for fast, in-memory SQL operations.

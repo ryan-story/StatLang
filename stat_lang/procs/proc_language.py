@@ -1,5 +1,5 @@
 """
-PROC LANGUAGE Implementation for Open-SAS
+PROC LANGUAGE Implementation for StatLang
 
 This module implements SAS PROC LANGUAGE functionality for LLM integration
 using Hugging Face transformers for open-source language model access.

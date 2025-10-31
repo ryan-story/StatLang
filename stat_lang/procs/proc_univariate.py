@@ -1,5 +1,5 @@
 """
-PROC UNIVARIATE Implementation for Open-SAS
+PROC UNIVARIATE Implementation for StatLang
 
 This module implements SAS PROC UNIVARIATE functionality for detailed
 univariate analysis including descriptive statistics and distribution tests.

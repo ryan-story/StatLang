@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import { spawn, ChildProcess } from 'child_process';
 import * as path from 'path';
 
-export class OSASNotebookProvider {
+export class StatLangNotebookProvider {
     private interpreters: Map<string, any> = new Map();
     private outputChannel: vscode.OutputChannel;
 

@@ -1,5 +1,5 @@
 """
-PROC SURVEYSELECT Implementation for Open-SAS
+PROC SURVEYSELECT Implementation for StatLang
 
 This module implements SAS PROC SURVEYSELECT functionality for random sampling
 of observations from datasets.

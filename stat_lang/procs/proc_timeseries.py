@@ -1,5 +1,5 @@
 """
-PROC TIMESERIES Implementation for Open-SAS
+PROC TIMESERIES Implementation for StatLang
 
 This module implements SAS PROC TIMESERIES and PROC ARIMA functionality
 for time series analysis including seasonal decomposition and ARIMA modeling.

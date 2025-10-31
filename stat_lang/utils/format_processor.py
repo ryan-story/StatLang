@@ -1,5 +1,5 @@
 """
-SAS Format and Informat System Implementation for Open-SAS
+StatLang Format and Informat System Implementation
 
 This module implements the SAS format system including:
 - Built-in date/time formats (DATE9., MMDDYY10., WEEKDATE., DATETIME20., TIME5.)
@@ -29,7 +29,7 @@ class FormatDefinition:
 
 
 class FormatProcessor:
-    """SAS Format Processor for Open-SAS."""
+    """StatLang Format Processor."""
     
     def __init__(self):
         # Format registry

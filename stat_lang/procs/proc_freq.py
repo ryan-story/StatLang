@@ -1,5 +1,5 @@
 """
-PROC FREQ Implementation for Open-SAS
+PROC FREQ Implementation for StatLang
 
 This module implements SAS PROC FREQ functionality for frequency
 tables and cross-tabulations.

@@ -1,5 +1,5 @@
 """
-PROC LOGIT Implementation for Open-SAS
+PROC LOGIT Implementation for StatLang
 
 This module implements SAS PROC LOGIT functionality for logistic regression
 using statsmodels for statistical inference.

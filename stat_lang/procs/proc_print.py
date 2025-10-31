@@ -1,5 +1,5 @@
 """
-PROC PRINT Implementation for Open-SAS
+PROC PRINT Implementation for StatLang
 
 This module implements SAS PROC PRINT functionality for displaying
 dataset contents with format support.

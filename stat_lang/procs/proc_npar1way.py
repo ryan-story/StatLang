@@ -1,5 +1,5 @@
 """
-PROC NPAR1WAY Implementation for Open-SAS
+PROC NPAR1WAY Implementation for StatLang
 
 This module implements SAS PROC NPAR1WAY functionality for nonparametric
 tests including Mann-Whitney U test and Kruskal-Wallis test.

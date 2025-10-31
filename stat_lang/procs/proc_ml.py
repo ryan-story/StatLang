@@ -1,5 +1,5 @@
 """
-PROC TREE, PROC FOREST, PROC BOOST Implementation for Open-SAS
+PROC TREE, PROC FOREST, PROC BOOST Implementation for StatLang
 
 This module implements SAS PROC TREE, PROC FOREST, and PROC BOOST functionality
 for machine learning using scikit-learn.

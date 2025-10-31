@@ -27,7 +27,7 @@ Examples:
     parser.add_argument(
         'file',
         nargs='?',
-        help='Path to .osas file to execute'
+        help='Path to .statlang file to execute'
     )
     
     parser.add_argument(
@@ -39,7 +39,7 @@ Examples:
     parser.add_argument(
         '--version',
         action='version',
-        version='Open-SAS 0.1.2'
+        version='StatLang 0.1.2'
     )
     
     parser.add_argument(

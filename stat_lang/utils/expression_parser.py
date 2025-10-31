@@ -1,5 +1,5 @@
 """
-Expression Parser for Open-SAS
+Expression Parser for StatLang
 
 This module provides functionality to parse and evaluate SAS expressions
 for WHERE clauses, IF statements, and variable assignments.

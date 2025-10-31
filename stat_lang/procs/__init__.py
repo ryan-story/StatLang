@@ -1,5 +1,5 @@
 """
-PROC Procedures Module for Open-SAS
+PROC Procedures Module for StatLang
 
 This module contains implementations of SAS PROC procedures
 using Python libraries as the backend.

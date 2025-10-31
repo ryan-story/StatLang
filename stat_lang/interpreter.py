@@ -89,10 +89,10 @@ class SASInterpreter:
         
     def run_file(self, file_path: str) -> None:
         """
-        Execute a .osas file.
+        Execute a .statlang file.
         
         Args:
-            file_path: Path to the .osas file to execute
+            file_path: Path to the .statlang file to execute
         """
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File not found: {file_path}")

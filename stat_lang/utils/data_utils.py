@@ -1,5 +1,5 @@
 """
-Data Utilities for Open-SAS
+Data Utilities for StatLang
 
 This module provides utility functions for data manipulation,
 formatting, and other data-related operations.

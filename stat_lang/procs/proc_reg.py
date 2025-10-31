@@ -1,5 +1,5 @@
 """
-PROC REG Implementation for Open-SAS
+PROC REG Implementation for StatLang
 
 This module implements SAS PROC REG functionality for linear regression analysis,
 including model fitting, predictions, and residual analysis.

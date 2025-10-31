@@ -1,5 +1,5 @@
 """
-PROC TTEST Implementation for Open-SAS
+PROC TTEST Implementation for StatLang
 
 This module implements SAS PROC TTEST functionality for t-tests including
 independent samples, paired samples, and one-sample t-tests.

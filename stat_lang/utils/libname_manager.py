@@ -1,5 +1,5 @@
 """
-LIBNAME Manager for Open-SAS
+LIBNAME Manager for StatLang
 
 This module provides functionality to manage SAS libraries (LIBNAME)
 with persistent storage using Parquet format.
