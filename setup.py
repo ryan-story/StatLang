@@ -9,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="statlang",
-    version="0.1.2",
+    version="0.1.3",
     author="Ryan Story",
     author_email="ryan@stryve.com",
     description="Python-based statistical scripting language with Jupyter notebook support",
