@@ -1,6 +1,7 @@
 # StatLang
 
 <div align="center">
+  <img src="media/StatLang.png" alt="StatLang Logo" width="200"/>
   <h3>An open-source, Python-based statistical scripting language</h3>
   <p>Write and run statistical scripts with full syntax highlighting and a Python backend.</p>
 </div>
