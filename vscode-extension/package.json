@@ -2,7 +2,7 @@
   "name": "statlang",
   "displayName": "StatLang: Statistical Scripting Notebook",
   "description": "Run StatLang scripts in VS Code with a fast, Python-powered interpreter.",
-  "version": "0.2.4",
+  "version": "0.2.6",
   "publisher": "RyanBlakeStory",
   "author": {
     "name": "Ryan Story",

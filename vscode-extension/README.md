@@ -1,7 +1,7 @@
 # StatLang VS Code Extension
 
 <p align="center">
-  <img src="../media/StatLang.png" alt="StatLang Logo" width="200"/>
+  <img src="https://raw.githubusercontent.com/ryan-story/StatLang/main/media/StatLang.png" alt="StatLang Logo" width="200"/>
 </p>
 
 <div align="center">
