@@ -8,6 +8,8 @@ import argparse
 import os
 import sys
 
+from stat_lang import __version__
+
 from .interpreter import SASInterpreter
 
 
@@ -39,7 +41,7 @@ Examples:
     parser.add_argument(
         '--version',
         action='version',
-        version='StatLang 0.1.2'
+        version=f'StatLang {__version__}'
     )
     
     parser.add_argument(

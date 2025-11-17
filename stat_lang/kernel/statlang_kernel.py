@@ -15,7 +15,7 @@ from typing import Optional
 
 from ipykernel.kernelbase import Kernel
 
-from stat_lang import SASInterpreter
+from stat_lang import SASInterpreter, __version__
 
 # Set up logging (WARNING level to suppress INFO messages)
 # Use platform-independent temp directory
@@ -35,7 +35,7 @@ class StatLangKernel(Kernel):
     """Jupyter kernel for StatLang."""
     
     implementation = 'statlang'
-    implementation_version = '0.1.2'
+    implementation_version = __version__
     language = 'statlang'
     language_version = '9.4'
     language_info = {

@@ -9,14 +9,14 @@ from contextlib import redirect_stderr, redirect_stdout
 
 from ipykernel.kernelbase import Kernel
 
-from stat_lang import SASInterpreter
+from stat_lang import SASInterpreter, __version__
 
 
 class WorkingStatLangKernel(Kernel):
     """Working Jupyter kernel for StatLang."""
     
     implementation = 'StatLang'
-    implementation_version = '0.1.2'
+    implementation_version = __version__
     language = 'statlang'
     language_version = '9.4'
     language_info = {

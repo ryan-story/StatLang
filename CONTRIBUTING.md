@@ -19,10 +19,12 @@ This project adheres to a code of conduct adapted from the Contributor Covenant.
 ### Contributing Code
 
 1. **Fork the repository** and clone your fork
-2. **Create a feature branch** from `main`
+2. **Create a feature branch** from `develop` (or `main` for hotfixes)
 3. **Make your changes** following the coding standards
 4. **Test your changes** thoroughly
-5. **Submit a pull request** with a clear description
+5. **Submit a pull request** to `develop` for review
+6. Once approved, merge into `develop`
+7. When ready for release, open a PR from `develop` to `main` for final review
 
 ### Development Setup
 
@@ -117,6 +119,25 @@ Brief description of changes
 - **GitHub Issues**: For bug reports and feature requests
 - **GitHub Discussions**: For questions and general discussion
 - **Documentation**: Check the wiki for detailed guides
+
+## Release Process
+
+Releases are automated and triggered when code is merged to `main`:
+
+1. **Development flow**: Open PR → merge into `develop`
+2. **Release flow**: Open PR from `develop` → `main` and review manually
+3. **After merge to `main`**, the Release workflow automatically:
+   - Re-runs all tests (ruff, mypy, pytest)
+   - Computes next semantic version from commit messages (conventional commits)
+   - Bumps versions in `pyproject.toml`, `stat_lang/__init__.py`, and `vscode-extension/package.json`
+   - Creates a Git tag and GitHub Release
+   - Publishes the Python package to PyPI
+   - Publishes the VS Code extension to the Marketplace
+
+**Commit message format**: Use conventional commits so semantic-release can determine version bumps:
+- `feat: ...` → minor version bump
+- `fix: ...` → patch version bump
+- `feat!: ...` or `BREAKING CHANGE: ...` → major version bump
 
 ## Recognition
 
