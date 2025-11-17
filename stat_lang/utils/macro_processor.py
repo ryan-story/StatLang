@@ -15,6 +15,8 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
+from stat_lang import __version__
+
 
 @dataclass
 class MacroDefinition:
@@ -50,7 +52,7 @@ class MacroProcessor:
     def _initialize_system_variables(self):
         """Initialize system variables."""
         self.global_variables.update({
-            'SYSVER': 'StatLang v0.1.2',
+            'SYSVER': f'StatLang v{__version__}',
             'SYSDATE': '2024-01-01',
             'SYSTIME': '12:00:00',
             'SYSUSERID': 'user',
