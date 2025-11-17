@@ -23,7 +23,7 @@ class NotebookSASInterpreter(SASInterpreter):
         self.output_buffer = io.StringIO()
         self.error_buffer = io.StringIO()
     
-    def run_code(self, sas_code: str) -> Dict[str, Any]:
+    def run_code(self, sas_code: str) -> Dict[str, Any]:  # type: ignore[override]
         """
         Run SAS code and return structured results for notebook display.
         
@@ -91,7 +91,7 @@ class NotebookSASInterpreter(SASInterpreter):
         if len(numeric_cols) == 0:
             return {}
         
-        return df[numeric_cols].describe().to_dict()
+        return df[numeric_cols].describe().to_dict()  # type: ignore[no-any-return]
     
     def _get_proc_results(self) -> List[Dict[str, Any]]:
         """Get results from PROC procedures executed in this session."""
@@ -168,11 +168,11 @@ Columns:
             return f"Dataset {name} not found"
         
         if format == 'json':
-            return df.to_json(orient='records', indent=2)
+            return str(df.to_json(orient='records', indent=2))
         elif format == 'csv':
-            return df.to_csv(index=False)
+            return str(df.to_csv(index=False))
         elif format == 'html':
-            return df.to_html(index=False, classes='table table-striped')
+            return str(df.to_html(index=False, classes='table table-striped'))
         else:
             return f"Unsupported format: {format}"
     

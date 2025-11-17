@@ -57,7 +57,7 @@ class ProcLanguage:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -122,6 +122,11 @@ class ProcLanguage:
     
     def _generate_text(self, prompt: str, model: str) -> Dict[str, Any]:
         """Generate text using the Hugging Face model."""
+        if self.generator is None:
+            return {
+                'output': ["ERROR: Language model not initialized."],
+                'data': None
+            }
         try:
             # Generate text using the pipeline
             result = self.generator(
@@ -161,6 +166,11 @@ class ProcLanguage:
     
     def _question_answer(self, question: str, context: str, model: str) -> Dict[str, Any]:
         """Answer questions using the model."""
+        if self.generator is None:
+            return {
+                'output': ["ERROR: Language model not initialized."],
+                'data': None
+            }
         try:
             # For Q&A, we'll use text generation with a structured prompt
             if context:
@@ -208,6 +218,11 @@ class ProcLanguage:
     
     def _summarize_text(self, text: str, model: str) -> Dict[str, Any]:
         """Summarize text using the model."""
+        if self.generator is None:
+            return {
+                'output': ["ERROR: Language model not initialized."],
+                'data': None
+            }
         try:
             summary_prompt = f"Summarize the following text:\n\n{text}\n\nSummary:"
             
@@ -249,6 +264,11 @@ class ProcLanguage:
     
     def _analyze_text(self, text: str, model: str) -> Dict[str, Any]:
         """Analyze text using the model."""
+        if self.generator is None:
+            return {
+                'output': ["ERROR: Language model not initialized."],
+                'data': None
+            }
         try:
             analysis_prompt = f"Analyze the following text and provide insights:\n\n{text}\n\nAnalysis:"
             
@@ -290,6 +310,11 @@ class ProcLanguage:
     
     def _summarize_data(self, data: pd.DataFrame, var_vars: List[str], prompt: str, model: str) -> Dict[str, Any]:
         """Summarize data using the model."""
+        if self.generator is None:
+            return {
+                'output': ["ERROR: Language model not initialized."],
+                'data': None
+            }
         try:
             # Create a text description of the data
             data_desc = f"Dataset with {len(data)} rows and {len(data.columns)} columns."
@@ -337,6 +362,11 @@ class ProcLanguage:
     
     def _analyze_data(self, data: pd.DataFrame, var_vars: List[str], prompt: str, model: str) -> Dict[str, Any]:
         """Analyze data using the model."""
+        if self.generator is None:
+            return {
+                'output': ["ERROR: Language model not initialized."],
+                'data': None
+            }
         try:
             # Create a text description of the data
             data_desc = f"Dataset with {len(data)} rows and {len(data.columns)} columns."
