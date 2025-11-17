@@ -125,13 +125,13 @@ class FormatProcessor:
         
         # Handle parameterized formats
         if format_name in ['DOLLAR', 'COMMA', 'BEST', 'PERCENT']:
-            return self.formats[format_name](value, format_def.width, format_def.decimal)
+            return str(self.formats[format_name](value, format_def.width, format_def.decimal))
         elif format_name.startswith('$'):
-            return self.formats['$'](value, format_def.width)
+            return str(self.formats['$'](value, format_def.width))
         else:
             # Direct format lookup
             if format_name in self.formats:
-                return self.formats[format_name](value, format_def.width)
+                return str(self.formats[format_name](value, format_def.width))
             else:
                 return str(value)
     

@@ -15,7 +15,7 @@ import pandas as pd
 class LibnameManager:
     """Manager for SAS libraries and persistent data storage."""
     
-    def __init__(self, default_work_dir: str = None):
+    def __init__(self, default_work_dir: Optional[str] = None):
         """
         Initialize the LIBNAME manager.
         

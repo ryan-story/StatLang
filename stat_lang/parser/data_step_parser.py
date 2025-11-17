@@ -7,7 +7,7 @@ Python operations on DataFrames.
 
 import re
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import pandas as pd
 
@@ -24,7 +24,7 @@ class DataStepStatement:
 class DataStepInfo:
     """Information about a DATA step."""
     output_dataset: str
-    statements: List[DataStepStatement]
+    statements: List[str]  # Changed from List[DataStepStatement] to match actual usage
     set_datasets: List[str]
     where_conditions: List[str]
     variable_assignments: List[str]
@@ -72,6 +72,11 @@ class DataStepParser:
         
         if not data_statement:
             raise ValueError("No DATA statement found")
+        
+        if output_dataset is None:
+            raise ValueError("DATA step missing output dataset name")
+        
+        output_dataset = str(output_dataset)
             
         # Parse remaining statements
         set_datasets = []
@@ -259,7 +264,7 @@ class DataStepParser:
         for line in data_lines:
             values = line.split()
             if len(values) == len(var_names):
-                row = {}
+                row: Dict[str, Any] = {}
                 for i, var_name in enumerate(var_names):
                     if var_types[var_name] == 'str':
                         row[var_name] = values[i]

@@ -5,7 +5,7 @@ This module provides utility functions for data manipulation,
 formatting, and other data-related operations.
 """
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -57,7 +57,7 @@ class DataUtils:
         return lines
     
     @staticmethod
-    def create_summary_stats(df: pd.DataFrame, numeric_cols: List[str] = None) -> Dict[str, Dict[str, float]]:
+    def create_summary_stats(df: pd.DataFrame, numeric_cols: Optional[List[str]] = None) -> Dict[str, Dict[str, float]]:
         """
         Create summary statistics for numeric columns.
         
@@ -181,7 +181,7 @@ class DataUtils:
         return df.sort_values(by=valid_vars, ascending=ascending)
     
     @staticmethod
-    def drop_duplicates(df: pd.DataFrame, subset: List[str] = None) -> pd.DataFrame:
+    def drop_duplicates(df: pd.DataFrame, subset: Optional[List[str]] = None) -> pd.DataFrame:
         """
         Remove duplicate rows from a DataFrame.
         

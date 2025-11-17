@@ -7,7 +7,8 @@ for WHERE clauses, IF statements, and variable assignments.
 
 import operator
 import re
-from typing import Any, List
+from collections.abc import Callable
+from typing import Any, Dict, List
 
 import pandas as pd
 
@@ -17,7 +18,7 @@ class ExpressionParser:
     
     def __init__(self):
         # Define operators
-        self.operators = {
+        self.operators: Dict[str, Callable[..., Any]] = {
             '=': operator.eq,
             '==': operator.eq,
             '^=': operator.ne,

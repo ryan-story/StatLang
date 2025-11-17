@@ -130,6 +130,11 @@ class MacroParser:
         
         if macro_start is None:
             raise ValueError("No %MACRO statement found")
+        
+        if macro_name is None:
+            raise ValueError("Macro definition missing name")
+        
+        macro_name = str(macro_name)
             
         # Find %MEND statement
         mend_line = None

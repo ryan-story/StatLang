@@ -84,12 +84,13 @@ class MacroProcessor:
         # Check local scopes first (most recent first)
         for scope in reversed(self.local_scopes):
             if name in scope:
-                return scope[name]
+                return str(scope[name])
         
         # Check global variables
-        return self.global_variables.get(name)
+        result = self.global_variables.get(name)
+        return result
     
-    def push_local_scope(self, parameters: Dict[str, str] = None) -> None:
+    def push_local_scope(self, parameters: Optional[Dict[str, str]] = None) -> None:
         """Push a new local scope onto the stack."""
         local_vars = parameters or {}
         self.local_scopes.append(local_vars)
@@ -119,7 +120,7 @@ class MacroProcessor:
         
         try:
             # Process macro body
-            expanded_code = []
+            expanded_code: List[str] = []
             i = 0
             while i < len(macro_def.body):
                 line = macro_def.body[i]

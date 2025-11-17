@@ -7,6 +7,8 @@ data step operations.
 """
 
 import re
+from collections.abc import Callable
+from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -21,7 +23,7 @@ class ExpressionEvaluator:
         self.expression_parser = ExpressionParser()
         
         # Define SAS functions
-        self.functions = {
+        self.functions: Dict[str, Callable[..., Any]] = {
             'sum': lambda *args: sum(args),
             'mean': lambda *args: np.mean(args),
             'min': lambda *args: min(args),
@@ -220,7 +222,7 @@ class ExpressionEvaluator:
         args = [arg.strip() for arg in args_str.split(',')]
         
         try:
-            func = self.functions[func_name]
+            func: Callable[..., Any] = self.functions[func_name]
             
             # Evaluate arguments
             evaluated_args = []
@@ -244,7 +246,7 @@ class ExpressionEvaluator:
         except Exception:
             return pd.Series([0] * len(data), index=data.index)
     
-    def _substr(self, string: str, start: int, length: int = None) -> str:
+    def _substr(self, string: str, start: int, length: Optional[int] = None) -> str:
         """SAS SUBSTR function."""
         if length is None:
             return string[start-1:]
@@ -254,7 +256,7 @@ class ExpressionEvaluator:
         """SAS INDEX function."""
         return string.find(substring) + 1 if substring in string else 0
     
-    def _compress(self, string: str, chars: str = None) -> str:
+    def _compress(self, string: str, chars: Optional[str] = None) -> str:
         """SAS COMPRESS function."""
         if chars is None:
             return string.replace(' ', '')

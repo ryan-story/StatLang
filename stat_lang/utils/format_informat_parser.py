@@ -73,7 +73,7 @@ class FormatInformatParser:
     
     def _parse_variable_format_pairs(self, statement: str) -> Tuple[List[str], List[str]]:
         """Parse variable-format pairs from statement."""
-        variables = []
+        variables: List[str] = []
         formats = []
         
         # Split by spaces
