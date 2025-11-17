@@ -5,9 +5,11 @@ This module implements SAS PROC SURVEYSELECT functionality for random sampling
 of observations from datasets.
 """
 
-import pandas as pd
+from typing import Any, Dict, List
+
 import numpy as np
-from typing import Dict, List, Any, Optional
+import pandas as pd
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -28,7 +30,7 @@ class ProcSurveySelect:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }

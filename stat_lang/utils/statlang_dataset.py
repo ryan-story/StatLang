@@ -7,11 +7,12 @@ This module extends the basic dataset functionality to include:
 - Integration with macro and format processors
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass, field
-from .format_processor import FormatProcessor, FormatDefinition
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
+
+from .format_processor import FormatProcessor
 
 
 @dataclass
@@ -64,7 +65,7 @@ class SasDataset:
         """Apply formats to the dataset."""
         return format_processor.apply_formats_to_dataframe(self.dataframe, self.formats)
     
-    def copy_with_formats(self, new_name: str = None) -> 'SasDataset':
+    def copy_with_formats(self, new_name: Optional[str] = None) -> 'SasDataset':
         """Create a copy of the dataset with format metadata."""
         return SasDataset(
             name=new_name or f"{self.name}_copy",
@@ -76,10 +77,10 @@ class SasDataset:
             types=self.types.copy()
         )
     
-    def inherit_formats_from(self, source_dataset: 'SasDataset', columns: List[str] = None) -> None:
+    def inherit_formats_from(self, source_dataset: 'SasDataset', columns: Optional[List[str]] = None) -> None:
         """Inherit formats from another dataset."""
         if columns is None:
-            columns = source_dataset.dataframe.columns
+            columns = list(source_dataset.dataframe.columns)
         
         for column in columns:
             if column in source_dataset.formats:

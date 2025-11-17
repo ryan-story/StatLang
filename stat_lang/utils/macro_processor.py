@@ -9,12 +9,11 @@ This module implements the macro system including:
 - Macro execution and code generation
 """
 
-import re
 import ast
-import json
-from typing import Dict, List, Any, Optional, Union
-from dataclasses import dataclass
+import re
 from collections import deque
+from dataclasses import dataclass
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -85,12 +84,13 @@ class MacroProcessor:
         # Check local scopes first (most recent first)
         for scope in reversed(self.local_scopes):
             if name in scope:
-                return scope[name]
+                return str(scope[name])
         
         # Check global variables
-        return self.global_variables.get(name)
+        result = self.global_variables.get(name)
+        return result
     
-    def push_local_scope(self, parameters: Dict[str, str] = None) -> None:
+    def push_local_scope(self, parameters: Optional[Dict[str, str]] = None) -> None:
         """Push a new local scope onto the stack."""
         local_vars = parameters or {}
         self.local_scopes.append(local_vars)
@@ -120,7 +120,7 @@ class MacroProcessor:
         
         try:
             # Process macro body
-            expanded_code = []
+            expanded_code: List[str] = []
             i = 0
             while i < len(macro_def.body):
                 line = macro_def.body[i]
@@ -263,15 +263,8 @@ class MacroProcessor:
         
         # Simple evaluation using Python's eval (with safety considerations)
         try:
-            # Only allow safe operations
-            allowed_names = {
-                '__builtins__': {},
-                'True': True,
-                'False': False,
-                'None': None
-            }
             return bool(ast.literal_eval(condition))
-        except:
+        except Exception:
             # Fallback to string comparison
             return condition.lower() in ('true', '1', 'yes')
     

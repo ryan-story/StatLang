@@ -5,11 +5,13 @@ This module implements SAS PROC FACTOR functionality for principal component
 analysis (PCA) and factor analysis using scikit-learn.
 """
 
-import pandas as pd
+from typing import Any, Dict, List
+
 import numpy as np
+import pandas as pd
 from sklearn.decomposition import PCA, FactorAnalysis
 from sklearn.preprocessing import StandardScaler
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -30,7 +32,7 @@ class ProcFactor:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -99,7 +101,7 @@ class ProcFactor:
     
     def _perform_pca(self, data: pd.DataFrame, var_names: List[str], n_components: int) -> Dict[str, Any]:
         """Perform Principal Component Analysis."""
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -154,7 +156,7 @@ class ProcFactor:
         results['output_text'].append("")
         
         # Kaiser criterion
-        kaiser_count = np.sum(explained_variance > 1.0)
+        kaiser_count: int = int(np.sum(explained_variance > 1.0))
         results['output_text'].append(f"Kaiser criterion (eigenvalue > 1): {kaiser_count} components")
         results['output_text'].append("")
         
@@ -181,7 +183,7 @@ class ProcFactor:
     
     def _perform_factor_analysis(self, data: pd.DataFrame, var_names: List[str], n_factors: int) -> Dict[str, Any]:
         """Perform Factor Analysis."""
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -192,7 +194,6 @@ class ProcFactor:
         
         # Get results
         components = fa.components_
-        explained_variance = fa.noise_variance_
         
         # Format output
         results['output_text'].append("Factor Analysis")

@@ -5,9 +5,10 @@ This module implements SAS PROC CONTENTS functionality for displaying
 dataset metadata and variable information.
 """
 
+from typing import Any, Dict
+
 import pandas as pd
-import numpy as np
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -28,7 +29,7 @@ class ProcContents:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }

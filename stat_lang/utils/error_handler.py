@@ -6,9 +6,9 @@ for SAS code execution.
 """
 
 import re
-from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
+from typing import List, Optional
 
 
 class ErrorType(Enum):
@@ -174,7 +174,6 @@ class ErrorHandler:
         
         has_data_statement = False
         has_run_statement = False
-        in_datalines = False
         
         for i, line in enumerate(lines, 1):
             line = line.strip()
@@ -200,7 +199,7 @@ class ErrorHandler:
             
             # Check for DATALINES
             elif line_upper in ['DATALINES;', 'CARDS;']:
-                in_datalines = True
+                pass  # DATALINES detected
             
             # Check for INPUT statement
             elif line_upper.startswith('INPUT '):

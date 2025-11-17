@@ -10,12 +10,11 @@ This module implements the SAS format system including:
 """
 
 import re
-import locale
-from datetime import datetime, date, time
-from typing import Dict, List, Any, Optional, Union, Callable
 from dataclasses import dataclass
+from datetime import date, datetime, time
+from typing import Any, Callable, Dict, Optional
+
 import pandas as pd
-import numpy as np
 
 
 @dataclass
@@ -126,13 +125,13 @@ class FormatProcessor:
         
         # Handle parameterized formats
         if format_name in ['DOLLAR', 'COMMA', 'BEST', 'PERCENT']:
-            return self.formats[format_name](value, format_def.width, format_def.decimal)
+            return str(self.formats[format_name](value, format_def.width, format_def.decimal))
         elif format_name.startswith('$'):
-            return self.formats['$'](value, format_def.width)
+            return str(self.formats['$'](value, format_def.width))
         else:
             # Direct format lookup
             if format_name in self.formats:
-                return self.formats[format_name](value, format_def.width)
+                return str(self.formats[format_name](value, format_def.width))
             else:
                 return str(value)
     
@@ -159,7 +158,7 @@ class FormatProcessor:
             try:
                 dt = datetime.strptime(value, '%Y-%m-%d')
                 return dt.strftime('%d%b%Y').upper()
-            except:
+            except Exception:
                 return str(value)
         else:
             return str(value)
@@ -173,7 +172,7 @@ class FormatProcessor:
             try:
                 dt = datetime.strptime(value, '%Y-%m-%d')
                 return dt.strftime('%m/%d/%Y')
-            except:
+            except Exception:
                 return str(value)
         else:
             return str(value)
@@ -187,7 +186,7 @@ class FormatProcessor:
             try:
                 dt = datetime.strptime(value, '%Y-%m-%d')
                 return dt.strftime('%A, %B %d, %Y')
-            except:
+            except Exception:
                 return str(value)
         else:
             return str(value)
@@ -201,7 +200,7 @@ class FormatProcessor:
             try:
                 dt = datetime.strptime(value, '%Y-%m-%d')
                 return dt.strftime('%y%m%d')
-            except:
+            except Exception:
                 return str(value)
         else:
             return str(value)
@@ -215,7 +214,7 @@ class FormatProcessor:
             try:
                 dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
                 return dt.strftime('%d%b%Y:%H:%M:%S').upper()
-            except:
+            except Exception:
                 return str(value)
         else:
             return str(value)
@@ -228,7 +227,7 @@ class FormatProcessor:
             try:
                 dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
                 return dt.strftime('%d%b%y:%H:%M:%S').upper()
-            except:
+            except Exception:
                 return str(value)
         else:
             return str(value)
@@ -247,7 +246,7 @@ class FormatProcessor:
                 else:
                     t = datetime.strptime(value, '%H:%M').time()
                 return t.strftime('%-H:%M') if t.hour < 10 else t.strftime('%H:%M')
-            except:
+            except Exception:
                 return str(value)
         else:
             return str(value)
@@ -265,7 +264,7 @@ class FormatProcessor:
                 else:
                     t = datetime.strptime(value, '%H:%M').time()
                 return t.strftime('%H:%M:%S')
-            except:
+            except Exception:
                 return str(value)
         else:
             return str(value)

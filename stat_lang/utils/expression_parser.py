@@ -5,11 +5,12 @@ This module provides functionality to parse and evaluate SAS expressions
 for WHERE clauses, IF statements, and variable assignments.
 """
 
-import re
-import pandas as pd
-import numpy as np
-from typing import Any, Dict, List, Union
 import operator
+import re
+from collections.abc import Callable
+from typing import Any, Dict, List
+
+import pandas as pd
 
 
 class ExpressionParser:
@@ -17,7 +18,7 @@ class ExpressionParser:
     
     def __init__(self):
         # Define operators
-        self.operators = {
+        self.operators: Dict[str, Callable[..., Any]] = {
             '=': operator.eq,
             '==': operator.eq,
             '^=': operator.ne,
@@ -109,7 +110,7 @@ class ExpressionParser:
         # Apply the condition
         try:
             return op_func(data[var_name], value)
-        except:
+        except Exception:
             return pd.Series([False] * len(data), index=data.index)
     
     def _parse_in_condition(self, match: re.Match, data: pd.DataFrame) -> pd.Series:

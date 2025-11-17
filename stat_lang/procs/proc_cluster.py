@@ -5,11 +5,13 @@ This module implements SAS PROC CLUSTER functionality for clustering analysis
 including k-means, hierarchical clustering, and HDBSCAN.
 """
 
-import pandas as pd
+from typing import Any, Dict, List
+
 import numpy as np
-from sklearn.cluster import KMeans, AgglomerativeClustering, HDBSCAN
+import pandas as pd
+from sklearn.cluster import HDBSCAN, AgglomerativeClustering, KMeans
 from sklearn.preprocessing import StandardScaler
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -30,7 +32,7 @@ class ProcCluster:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -100,7 +102,7 @@ class ProcCluster:
     
     def _perform_kmeans(self, data: pd.DataFrame, var_names: List[str], n_clusters: int) -> Dict[str, Any]:
         """Perform K-means clustering."""
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -172,7 +174,7 @@ class ProcCluster:
     
     def _perform_hierarchical(self, data: pd.DataFrame, var_names: List[str], n_clusters: int) -> Dict[str, Any]:
         """Perform Hierarchical clustering."""
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -195,16 +197,16 @@ class ProcCluster:
         results['output_text'].append("")
         
         # Calculate cluster centroids manually
-        centroids = []
+        centroids_list: List[Any] = []
         for i in range(n_clusters):
             cluster_data = data[cluster_labels == i]
             if len(cluster_data) > 0:
                 centroid = cluster_data.mean().values
-                centroids.append(centroid)
+                centroids_list.append(centroid)
             else:
-                centroids.append(np.zeros(len(var_names)))
+                centroids_list.append(np.zeros(len(var_names)))
         
-        centroids = np.array(centroids)
+        centroids: np.ndarray[Any, Any] = np.array(centroids_list)
         
         # Cluster centroids
         results['output_text'].append("Cluster Centroids")
@@ -246,7 +248,7 @@ class ProcCluster:
     
     def _perform_hdbscan(self, data: pd.DataFrame, var_names: List[str]) -> Dict[str, Any]:
         """Perform HDBSCAN clustering."""
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -289,7 +291,7 @@ class ProcCluster:
                         cluster_ids.append(label)
             
             if centroids:
-                centroids = np.array(centroids)
+                centroids_array: np.ndarray[Any, Any] = np.array(centroids)
                 
                 # Cluster centroids
                 results['output_text'].append("Cluster Centroids")
@@ -306,7 +308,7 @@ class ProcCluster:
                 for i, var in enumerate(var_names):
                     row = f"{var[:12]:<12}"
                     for j in range(len(cluster_ids)):
-                        row += f"{centroids[j, i]:>12.4f}"
+                        row += f"{centroids_array[j, i]:>12.4f}"
                     results['output_text'].append(row)
                 
                 results['output_text'].append("")

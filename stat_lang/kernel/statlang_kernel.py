@@ -4,16 +4,17 @@ StatLang Jupyter Kernel Implementation
 This module implements a Jupyter kernel for executing StatLang code
 in notebook environments.
 """
-import json
-import sys
 import io
-import traceback
 import logging
 import os
 import tempfile
+import traceback
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
-from contextlib import redirect_stdout, redirect_stderr
+from typing import Optional
+
 from ipykernel.kernelbase import Kernel
+
 from stat_lang import SASInterpreter
 
 # Set up logging (WARNING level to suppress INFO messages)
@@ -60,6 +61,7 @@ class StatLangKernel(Kernel):
         logger.info("=" * 80)
         
         super().__init__(**kwargs)
+        self.interpreter: Optional[SASInterpreter] = None
         try:
             self.interpreter = SASInterpreter()
             # Kernel base class initializes execution_count, but ensure it starts at 0
@@ -76,7 +78,7 @@ class StatLangKernel(Kernel):
             print(f"Warning: Failed to initialize interpreter: {e}")
             self.interpreter = None
     
-    def do_execute(self, code, silent, store_history=True, user_expressions=None, allow_stdin=False):
+    def do_execute(self, code, silent, store_history=True, user_expressions=None, allow_stdin=False, *, cell_meta=None, cell_id=None):
         """Execute StatLang code in the kernel."""
         
         logger.info(f"do_execute called with code: {repr(code[:100])}...")
@@ -135,6 +137,8 @@ class StatLangKernel(Kernel):
         self.error_buffer = io.StringIO()
         
         # Record datasets before execution
+        if self.interpreter is None:
+            return {'status': 'error', 'ename': 'InterpreterError', 'evalue': 'Interpreter not initialized'}
         datasets_before = set(self.interpreter.data_sets.keys())
         logger.info(f"Datasets before execution: {datasets_before}")
         
@@ -143,7 +147,7 @@ class StatLangKernel(Kernel):
             logger.info(f"Code being passed to interpreter: {repr(code)}")
             # Execute code and capture output
             with redirect_stdout(self.output_buffer), redirect_stderr(self.error_buffer):
-                result = self.interpreter.run_code(code)
+                self.interpreter.run_code(code)
             
             # Get output and errors
             output = self.output_buffer.getvalue()
@@ -176,7 +180,8 @@ class StatLangKernel(Kernel):
                     self._send_datasets_display(datasets)
                 else:
                     # Reset the flag for next execution
-                    self.interpreter._suppress_dataset_display = False
+                    if self.interpreter is not None:
+                        self.interpreter._suppress_dataset_display = False
             
             logger.info("Returning successful execution result")
             # Increment execution count AFTER successful execution
@@ -250,7 +255,7 @@ class StatLangKernel(Kernel):
             'status': 'ok'
         }
     
-    def do_inspect(self, code, cursor_pos, detail_level=0):
+    def do_inspect(self, code, cursor_pos, detail_level=0, omit_sections=()):
         """Provide code inspection/hover information."""
         # Get the word at cursor position
         text_before_cursor = code[:cursor_pos]
@@ -281,6 +286,8 @@ class StatLangKernel(Kernel):
     
     def _get_datasets_info(self):
         """Get information about datasets created in the interpreter."""
+        if self.interpreter is None:
+            return {}
         datasets = {}
         for name, df in self.interpreter.data_sets.items():
             datasets[name] = {
@@ -294,6 +301,8 @@ class StatLangKernel(Kernel):
     
     def _get_new_datasets_info(self, datasets_before):
         """Get information about datasets created in the current execution."""
+        if self.interpreter is None:
+            return {}
         datasets = {}
         current_datasets = set(self.interpreter.data_sets.keys())
         new_datasets = current_datasets - datasets_before

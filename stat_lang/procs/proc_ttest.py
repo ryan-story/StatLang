@@ -5,10 +5,12 @@ This module implements SAS PROC TTEST functionality for t-tests including
 independent samples, paired samples, and one-sample t-tests.
 """
 
-import pandas as pd
+from typing import Any, Dict
+
 import numpy as np
+import pandas as pd
 from scipy import stats
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -29,7 +31,7 @@ class ProcTtest:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -76,6 +78,9 @@ class ProcTtest:
             if test_type == 'paired':
                 var_results = self._paired_ttest(data, var, paired_vars[0], paired_vars[1])
             elif test_type == 'independent':
+                if class_var is None:
+                    results['output_text'].append("ERROR: CLASS variable required for independent t-test")
+                    continue
                 var_results = self._independent_ttest(data, var, class_var)
             else:
                 var_results = self._onesample_ttest(data, var, h0_value)

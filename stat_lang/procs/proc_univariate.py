@@ -5,10 +5,12 @@ This module implements SAS PROC UNIVARIATE functionality for detailed
 univariate analysis including descriptive statistics and distribution tests.
 """
 
-import pandas as pd
+from typing import Any, Dict, List
+
 import numpy as np
+import pandas as pd
 from scipy import stats
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -29,7 +31,7 @@ class ProcUnivariate:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -87,8 +89,8 @@ class ProcUnivariate:
         range_val = max_val - min_val
         
         # Calculate percentiles
-        percentiles = [1, 5, 10, 25, 50, 75, 90, 95, 99]
-        percentile_values = np.percentile(clean_series, percentiles)
+        percentiles: List[int] = [1, 5, 10, 25, 50, 75, 90, 95, 99]
+        percentile_values: np.ndarray[Any, Any] = np.percentile(clean_series, percentiles)
         
         # Calculate skewness and kurtosis
         skewness = stats.skew(clean_series)
@@ -98,24 +100,24 @@ class ProcUnivariate:
         if n <= 5000:
             try:
                 shapiro_stat, shapiro_p = stats.shapiro(clean_series)
-                normality_test = "Shapiro-Wilk"
-                normality_stat = shapiro_stat
-                normality_p = shapiro_p
-            except:
-                normality_test = "Not available"
-                normality_stat = None
-                normality_p = None
+                _normality_test = "Shapiro-Wilk"
+                _normality_stat = shapiro_stat
+                _normality_p = shapiro_p
+            except Exception:
+                _normality_test = "Not available"
+                _normality_stat = None
+                _normality_p = None
         else:
             # For large samples, use Kolmogorov-Smirnov test
             try:
                 ks_stat, ks_p = stats.kstest(clean_series, 'norm', args=(mean, std))
-                normality_test = "Kolmogorov-Smirnov"
-                normality_stat = ks_stat
-                normality_p = ks_p
-            except:
-                normality_test = "Not available"
-                normality_stat = None
-                normality_p = None
+                _normality_test = "Kolmogorov-Smirnov"
+                _normality_stat = ks_stat
+                _normality_p = ks_p
+            except Exception:
+                _normality_test = "Not available"
+                _normality_stat = None
+                _normality_p = None
         
         # Format output
         output = []
@@ -136,7 +138,7 @@ class ProcUnivariate:
         
         # Basic Statistical Measures
         output.append("Basic Statistical Measures")
-        output.append(f"  Location                    Variability")
+        output.append("  Location                    Variability")
         output.append(f"  Mean      {mean:>10.6f}     Std Deviation     {std:>10.6f}")
         output.append(f"  Median    {np.median(clean_series):>10.6f}     Variance          {var:>10.6f}")
         output.append(f"  Mode      {stats.mode(clean_series, keepdims=True)[0][0]:>10.6f}     Range             {range_val:>10.6f}")
@@ -146,11 +148,11 @@ class ProcUnivariate:
         # Tests for Location
         output.append("Tests for Location: Mu0=0")
         t_stat, t_p = stats.ttest_1samp(clean_series, 0)
-        output.append(f"  Test           -Statistic-    -----p Value------")
+        output.append("  Test           -Statistic-    -----p Value------")
         output.append(f"  Student's t    {t_stat:>10.6f}    Pr > |t|    {t_p:>10.6f}")
         # Use binomial test from scipy.stats
         from scipy.stats import binom
-        sign_count = np.sum(clean_series > 0)
+        sign_count: int = int(np.sum(clean_series > 0))
         sign_p = 2 * min(binom.cdf(sign_count, n, 0.5), 1 - binom.cdf(sign_count, n, 0.5))
         output.append(f"  Sign           {sign_count:>10.0f}    Pr >= |M|   {sign_p:>10.6f}")
         output.append(f"  Signed Rank    {np.sum(np.sign(clean_series) * np.arange(1, n+1)):>10.0f}    Pr >= |S|   {2 * min(0.5, 0.5):>10.6f}")
@@ -159,7 +161,8 @@ class ProcUnivariate:
         # Quantiles
         output.append("Quantiles (Definition 5)")
         output.append("  Level         Quantile")
-        for p, val in zip(percentiles, percentile_values):
+        percentile_list: List[float] = [float(v) for v in percentile_values]
+        for p, val in zip(percentiles, percentile_list):
             output.append(f"  {p:>3}%        {val:>10.6f}")
         output.append("")
         
@@ -194,23 +197,23 @@ class ProcUnivariate:
         stats_dict = {
             'Variable': var_name,
             'N': n,
-            'Mean': mean,
-            'Std_Dev': std,
-            'Variance': var,
-            'Min': min_val,
-            'Max': max_val,
-            'Range': range_val,
-            'Skewness': skewness,
-            'Kurtosis': kurtosis,
-            'P1': percentile_values[0],
-            'P5': percentile_values[1],
-            'P10': percentile_values[2],
-            'P25': percentile_values[3],
-            'P50': percentile_values[4],
-            'P75': percentile_values[5],
-            'P90': percentile_values[6],
-            'P95': percentile_values[7],
-            'P99': percentile_values[8]
+            'Mean': float(mean),
+            'Std_Dev': float(std),
+            'Variance': float(var),
+            'Min': float(min_val),
+            'Max': float(max_val),
+            'Range': float(range_val),
+            'Skewness': float(skewness),
+            'Kurtosis': float(kurtosis),
+            'P1': float(percentile_values[0]),
+            'P5': float(percentile_values[1]),
+            'P10': float(percentile_values[2]),
+            'P25': float(percentile_values[3]),
+            'P50': float(percentile_values[4]),
+            'P75': float(percentile_values[5]),
+            'P90': float(percentile_values[6]),
+            'P95': float(percentile_values[7]),
+            'P99': float(percentile_values[8])
         }
         
         return {

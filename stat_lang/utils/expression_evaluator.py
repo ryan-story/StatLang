@@ -6,10 +6,13 @@ for variable assignments, IF/THEN/ELSE statements, and other
 data step operations.
 """
 
-import pandas as pd
-import numpy as np
 import re
-from typing import Any, Dict, List, Union, Optional
+from collections.abc import Callable
+from typing import Any, Dict, Optional
+
+import numpy as np
+import pandas as pd
+
 from .expression_parser import ExpressionParser
 
 
@@ -20,7 +23,7 @@ class ExpressionEvaluator:
         self.expression_parser = ExpressionParser()
         
         # Define SAS functions
-        self.functions = {
+        self.functions: Dict[str, Callable[..., Any]] = {
             'sum': lambda *args: sum(args),
             'mean': lambda *args: np.mean(args),
             'min': lambda *args: min(args),
@@ -125,7 +128,7 @@ class ExpressionEvaluator:
                                 # Try to evaluate as expression
                                 result = self._evaluate_expression(value, data)
                                 data.loc[mask, var_name] = result[mask]
-                        except:
+                        except Exception:
                             data.loc[mask, var_name] = value
         
         return data
@@ -219,7 +222,7 @@ class ExpressionEvaluator:
         args = [arg.strip() for arg in args_str.split(',')]
         
         try:
-            func = self.functions[func_name]
+            func: Callable[..., Any] = self.functions[func_name]
             
             # Evaluate arguments
             evaluated_args = []
@@ -240,10 +243,10 @@ class ExpressionEvaluator:
             else:
                 return pd.Series([func(*evaluated_args)] * len(data), index=data.index)
                 
-        except:
+        except Exception:
             return pd.Series([0] * len(data), index=data.index)
     
-    def _substr(self, string: str, start: int, length: int = None) -> str:
+    def _substr(self, string: str, start: int, length: Optional[int] = None) -> str:
         """SAS SUBSTR function."""
         if length is None:
             return string[start-1:]
@@ -253,7 +256,7 @@ class ExpressionEvaluator:
         """SAS INDEX function."""
         return string.find(substring) + 1 if substring in string else 0
     
-    def _compress(self, string: str, chars: str = None) -> str:
+    def _compress(self, string: str, chars: Optional[str] = None) -> str:
         """SAS COMPRESS function."""
         if chars is None:
             return string.replace(' ', '')
@@ -306,7 +309,7 @@ class ExpressionEvaluator:
         if '>' in condition:
             parts = condition.split('>')
             if len(parts) == 2:
-                var, val = parts[0].strip(), parts[1].strip()
+                _var, _val = parts[0].strip(), parts[1].strip()
                 if index is not None:
                     # Vectorized comparison
                     return pd.Series([True] * len(index), index=index)  # Placeholder

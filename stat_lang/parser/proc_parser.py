@@ -6,8 +6,8 @@ for execution by the appropriate PROC implementation.
 """
 
 import re
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -43,7 +43,7 @@ class ProcParser:
         proc_name = None
         data_option = None
         output_option = None
-        options = {}
+        options: Dict[str, Any] = {}
         
         for line in lines:
             line = line.strip()
@@ -72,38 +72,38 @@ class ProcParser:
                     # Parse PROMPT option
                     prompt_match = re.search(r'prompt\s*=\s*[\'"]([^\'"]+)[\'"]', options_str, re.IGNORECASE)
                     if prompt_match:
-                        options['prompt'] = prompt_match.group(1)
+                        options['prompt'] = str(prompt_match.group(1))
                     
                     # Parse MODEL option
                     model_match = re.search(r'model\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if model_match:
-                        options['model'] = model_match.group(1)
+                        options['model'] = str(model_match.group(1))
                     
                     # Parse MODE option
                     mode_match = re.search(r'mode\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if mode_match:
-                        options['mode'] = mode_match.group(1)
+                        options['mode'] = str(mode_match.group(1))
                     
                     # Parse SURVEYSELECT-specific options
                     # METHOD option
                     method_match = re.search(r'method\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if method_match:
-                        options['method'] = method_match.group(1)
+                        options['method'] = str(method_match.group(1))
                     
                     # SAMPRATE option
                     samprate_match = re.search(r'samprate\s*=\s*([\d.]+)', options_str, re.IGNORECASE)
                     if samprate_match:
-                        options['samprate'] = samprate_match.group(1)
+                        options['samprate'] = str(samprate_match.group(1))
                     
                     # N option
                     n_match = re.search(r'n\s*=\s*(\d+)', options_str, re.IGNORECASE)
                     if n_match:
-                        options['n'] = n_match.group(1)
+                        options['n'] = str(n_match.group(1))
                     
                     # SEED option
                     seed_match = re.search(r'seed\s*=\s*(\d+)', options_str, re.IGNORECASE)
                     if seed_match:
-                        options['seed'] = seed_match.group(1)
+                        options['seed'] = str(seed_match.group(1))
                     
                     # OUTALL option
                     if re.search(r'\boutall\b', options_str, re.IGNORECASE):
@@ -112,38 +112,38 @@ class ProcParser:
                     # Parse PROMPT option
                     prompt_match = re.search(r'prompt\s*=\s*[\'"]([^\'"]+)[\'"]', options_str, re.IGNORECASE)
                     if prompt_match:
-                        options['prompt'] = prompt_match.group(1)
+                        options['prompt'] = str(prompt_match.group(1))
                     
                     # Parse MODEL option
                     model_match = re.search(r'model\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if model_match:
-                        options['model'] = model_match.group(1)
+                        options['model'] = str(model_match.group(1))
                     
                     # Parse MODE option
                     mode_match = re.search(r'mode\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if mode_match:
-                        options['mode'] = mode_match.group(1)
+                        options['mode'] = str(mode_match.group(1))
                     
                     # Parse SURVEYSELECT-specific options
                     # METHOD option
                     method_match = re.search(r'method\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if method_match:
-                        options['method'] = method_match.group(1)
+                        options['method'] = str(method_match.group(1))
                     
                     # SAMPRATE option
                     samprate_match = re.search(r'samprate\s*=\s*([\d.]+)', options_str, re.IGNORECASE)
                     if samprate_match:
-                        options['samprate'] = samprate_match.group(1)
+                        options['samprate'] = str(samprate_match.group(1))
                     
                     # N option
                     n_match = re.search(r'n\s*=\s*(\d+)', options_str, re.IGNORECASE)
                     if n_match:
-                        options['n'] = n_match.group(1)
+                        options['n'] = str(n_match.group(1))
                     
                     # SEED option
                     seed_match = re.search(r'seed\s*=\s*(\d+)', options_str, re.IGNORECASE)
                     if seed_match:
-                        options['seed'] = seed_match.group(1)
+                        options['seed'] = str(seed_match.group(1))
                     
                     # OUTALL option
                     if re.search(r'\boutall\b', options_str, re.IGNORECASE):
@@ -156,38 +156,38 @@ class ProcParser:
                     # Parse PROMPT option
                     prompt_match = re.search(r'prompt\s*=\s*[\'"]([^\'"]+)[\'"]', options_str, re.IGNORECASE)
                     if prompt_match:
-                        options['prompt'] = prompt_match.group(1)
+                        options['prompt'] = str(prompt_match.group(1))
                     
                     # Parse MODEL option
                     model_match = re.search(r'model\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if model_match:
-                        options['model'] = model_match.group(1)
+                        options['model'] = str(model_match.group(1))
                     
                     # Parse MODE option
                     mode_match = re.search(r'mode\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if mode_match:
-                        options['mode'] = mode_match.group(1)
+                        options['mode'] = str(mode_match.group(1))
                     
                     # Parse SURVEYSELECT-specific options
                     # METHOD option
                     method_match = re.search(r'method\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if method_match:
-                        options['method'] = method_match.group(1)
+                        options['method'] = str(method_match.group(1))
                     
                     # SAMPRATE option
                     samprate_match = re.search(r'samprate\s*=\s*([\d.]+)', options_str, re.IGNORECASE)
                     if samprate_match:
-                        options['samprate'] = samprate_match.group(1)
+                        options['samprate'] = str(samprate_match.group(1))
                     
                     # N option
                     n_match = re.search(r'n\s*=\s*(\d+)', options_str, re.IGNORECASE)
                     if n_match:
-                        options['n'] = n_match.group(1)
+                        options['n'] = str(n_match.group(1))
                     
                     # SEED option
                     seed_match = re.search(r'seed\s*=\s*(\d+)', options_str, re.IGNORECASE)
                     if seed_match:
-                        options['seed'] = seed_match.group(1)
+                        options['seed'] = str(seed_match.group(1))
                     
                     # OUTALL option
                     if re.search(r'\boutall\b', options_str, re.IGNORECASE):
@@ -197,22 +197,22 @@ class ProcParser:
                     # METHOD option
                     method_match = re.search(r'method\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if method_match:
-                        options['method'] = method_match.group(1)
+                        options['method'] = str(method_match.group(1))
                     
                     # SAMPRATE option
                     samprate_match = re.search(r'samprate\s*=\s*([\d.]+)', options_str, re.IGNORECASE)
                     if samprate_match:
-                        options['samprate'] = samprate_match.group(1)
+                        options['samprate'] = str(samprate_match.group(1))
                     
                     # N option
                     n_match = re.search(r'n\s*=\s*(\d+)', options_str, re.IGNORECASE)
                     if n_match:
-                        options['n'] = n_match.group(1)
+                        options['n'] = str(n_match.group(1))
                     
                     # SEED option
                     seed_match = re.search(r'seed\s*=\s*(\d+)', options_str, re.IGNORECASE)
                     if seed_match:
-                        options['seed'] = seed_match.group(1)
+                        options['seed'] = str(seed_match.group(1))
                     
                     # OUTALL option
                     if re.search(r'\boutall\b', options_str, re.IGNORECASE):
@@ -247,38 +247,38 @@ class ProcParser:
                     # Parse PROMPT option
                     prompt_match = re.search(r'prompt\s*=\s*[\'"]([^\'"]+)[\'"]', options_str, re.IGNORECASE)
                     if prompt_match:
-                        options['prompt'] = prompt_match.group(1)
+                        options['prompt'] = str(prompt_match.group(1))
                     
                     # Parse MODEL option
                     model_match = re.search(r'model\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if model_match:
-                        options['model'] = model_match.group(1)
+                        options['model'] = str(model_match.group(1))
                     
                     # Parse MODE option
                     mode_match = re.search(r'mode\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if mode_match:
-                        options['mode'] = mode_match.group(1)
+                        options['mode'] = str(mode_match.group(1))
                     
                     # Parse SURVEYSELECT-specific options
                     # METHOD option
                     method_match = re.search(r'method\s*=\s*([\w.]+)', options_str, re.IGNORECASE)
                     if method_match:
-                        options['method'] = method_match.group(1)
+                        options['method'] = str(method_match.group(1))
                     
                     # SAMPRATE option
                     samprate_match = re.search(r'samprate\s*=\s*([\d.]+)', options_str, re.IGNORECASE)
                     if samprate_match:
-                        options['samprate'] = samprate_match.group(1)
+                        options['samprate'] = str(samprate_match.group(1))
                     
                     # N option
                     n_match = re.search(r'n\s*=\s*(\d+)', options_str, re.IGNORECASE)
                     if n_match:
-                        options['n'] = n_match.group(1)
+                        options['n'] = str(n_match.group(1))
                     
                     # SEED option
                     seed_match = re.search(r'seed\s*=\s*(\d+)', options_str, re.IGNORECASE)
                     if seed_match:
-                        options['seed'] = seed_match.group(1)
+                        options['seed'] = str(seed_match.group(1))
                     
                     # OUTALL option
                     if re.search(r'\boutall\b', options_str, re.IGNORECASE):
@@ -286,6 +286,11 @@ class ProcParser:
         
         if not proc_line:
             raise ValueError("No PROC statement found")
+        
+        if proc_name is None:
+            raise ValueError("PROC statement missing procedure name")
+        
+        proc_name = str(proc_name)
             
         # Parse remaining statements
         statements = []
@@ -409,7 +414,7 @@ class ProcParser:
                 elif line.upper().startswith('MODEL '):
                     model_match = re.match(r'model\s+(.+?)(?:\s*;)?$', line, re.IGNORECASE)
                     if model_match:
-                        options['model'] = model_match.group(1).strip()
+                        options['model'] = str(model_match.group(1).strip())
                         
                 elif line.upper().startswith('OUTPUT '):
                     # Handle multi-line OUTPUT statement

@@ -5,10 +5,12 @@ This module implements SAS PROC NPAR1WAY functionality for nonparametric
 tests including Mann-Whitney U test and Kruskal-Wallis test.
 """
 
-import pandas as pd
+from typing import Any, Dict, List
+
 import numpy as np
+import pandas as pd
 from scipy import stats
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -29,7 +31,7 @@ class ProcNpar1way:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }

@@ -5,8 +5,10 @@ This module implements SAS PROC SORT functionality for sorting
 datasets by specified variables.
 """
 
+from typing import Any, Dict
+
 import pandas as pd
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -27,7 +29,7 @@ class ProcSort:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -67,7 +69,7 @@ class ProcSort:
         if nodupkey:
             # Remove duplicate observations based on BY variables
             sorted_data = sorted_data.drop_duplicates(subset=valid_by_vars)
-            results['output_text'].append(f"PROC SORT - Sorted with NODUPKEY option")
+            results['output_text'].append("PROC SORT - Sorted with NODUPKEY option")
         else:
             results['output_text'].append("PROC SORT - Dataset Sorted")
         

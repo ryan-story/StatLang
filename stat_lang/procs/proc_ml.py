@@ -5,14 +5,21 @@ This module implements SAS PROC TREE, PROC FOREST, and PROC BOOST functionality
 for machine learning using scikit-learn.
 """
 
-import pandas as pd
+from typing import Any, Dict
+
 import numpy as np
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, GradientBoostingRegressor
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
+import pandas as pd
+from sklearn.ensemble import (
+    GradientBoostingClassifier,
+    GradientBoostingRegressor,
+    RandomForestClassifier,
+    RandomForestRegressor,
+)
 from sklearn.metrics import accuracy_score, classification_report, mean_squared_error, r2_score
-from typing import Dict, List, Any, Optional
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -33,7 +40,7 @@ class ProcTree:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -261,7 +268,7 @@ class ProcForest:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -467,7 +474,7 @@ class ProcBoost:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }

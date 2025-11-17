@@ -5,11 +5,12 @@ This module implements SAS PROC SQL functionality for SQL query processing
 using DuckDB for fast, in-memory SQL operations.
 """
 
-import pandas as pd
-import numpy as np
-import duckdb
 import re
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
+
+import duckdb
+import pandas as pd
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -39,7 +40,7 @@ class ProcSQL:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }

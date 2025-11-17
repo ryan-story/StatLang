@@ -9,7 +9,7 @@ __version__ = "0.1.3"
 __author__ = "Ryan Story"
 __email__ = "ryan@stryve.com"
 
-from .interpreter import SASInterpreter as StatLangInterpreter
 from .interpreter import SASInterpreter
+from .interpreter import SASInterpreter as StatLangInterpreter
 
 __all__ = ["StatLangInterpreter", "SASInterpreter"]

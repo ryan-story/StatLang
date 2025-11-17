@@ -5,10 +5,11 @@ This module implements SAS PROC CORR functionality for correlation analysis
 including Pearson, Spearman, and Kendall correlation coefficients.
 """
 
-import pandas as pd
+from typing import Any, Dict, List
+
 import numpy as np
-from scipy import stats
-from typing import Dict, List, Any, Optional
+import pandas as pd
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -29,7 +30,7 @@ class ProcCorr:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -119,7 +120,6 @@ class ProcCorr:
         
         # Get variable names
         vars_list = corr_matrix.columns.tolist()
-        n_vars = len(vars_list)
         
         # Create formatted table
         # Header row

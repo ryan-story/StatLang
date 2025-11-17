@@ -5,10 +5,12 @@ This module implements SAS PROC MEANS functionality using pandas
 for descriptive statistics calculations.
 """
 
-import pandas as pd
-import numpy as np
 import re
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
+
+import numpy as np
+import pandas as pd
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -29,7 +31,7 @@ class ProcMeans:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }

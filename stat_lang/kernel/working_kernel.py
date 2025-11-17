@@ -3,12 +3,12 @@
 Working StatLang Jupyter Kernel Implementation
 """
 
-import json
-import sys
 import io
 import traceback
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
+
 from ipykernel.kernelbase import Kernel
+
 from stat_lang import SASInterpreter
 
 
@@ -35,7 +35,7 @@ class WorkingStatLangKernel(Kernel):
         self.error_buffer = io.StringIO()
         self.datasets_before_execution = set()
     
-    def do_execute(self, code, silent, store_history=True, user_expressions=None, allow_stdin=False):
+    def do_execute(self, code, silent, store_history=True, user_expressions=None, allow_stdin=False, *, cell_meta=None, cell_id=None):
         """Execute StatLang code in the kernel."""
         
         # Skip empty cells
@@ -57,7 +57,7 @@ class WorkingStatLangKernel(Kernel):
         try:
             # Execute code and capture output
             with redirect_stdout(self.output_buffer), redirect_stderr(self.error_buffer):
-                result = self.interpreter.run_code(code)
+                self.interpreter.run_code(code)
             
             # Get output and errors
             output = self.output_buffer.getvalue()
@@ -151,7 +151,7 @@ class WorkingStatLangKernel(Kernel):
             'status': 'ok'
         }
     
-    def do_inspect(self, code, cursor_pos, detail_level=0):
+    def do_inspect(self, code, cursor_pos, detail_level=0, omit_sections=()):
         """Provide code inspection/hover information."""
         # Get the word at cursor position
         text_before_cursor = code[:cursor_pos]

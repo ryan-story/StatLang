@@ -6,15 +6,16 @@ with persistent storage using Parquet format.
 """
 
 import os
-import pandas as pd
-from typing import Dict, Optional, List
 from pathlib import Path
+from typing import Dict, List, Optional
+
+import pandas as pd
 
 
 class LibnameManager:
     """Manager for SAS libraries and persistent data storage."""
     
-    def __init__(self, default_work_dir: str = None):
+    def __init__(self, default_work_dir: Optional[str] = None):
         """
         Initialize the LIBNAME manager.
         
