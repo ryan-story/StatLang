@@ -53,6 +53,11 @@ jobs:
         run: |
           npm install -g @vscode/vsce
 
+      - name: Install extension dependencies
+        working-directory: vscode-extension
+        run: |
+          npm ci
+
       - name: Publish VS Code extension
         working-directory: vscode-extension
         env:
