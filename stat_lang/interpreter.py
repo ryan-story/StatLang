@@ -60,7 +60,7 @@ class SASInterpreter:
         self.format_informat_parser = FormatInformatParser()
         
         # Initialize title tracking
-        self.current_title = None
+        self.current_title: Optional[str] = None
         
         # Initialize PROC implementations
         self.proc_implementations = {
@@ -453,6 +453,7 @@ class SASInterpreter:
             # Execute the appropriate PROC
             if proc_info.proc_name in self.proc_implementations:
                 proc_impl = self.proc_implementations[proc_info.proc_name]
+                # Type ignore: proc_impl is dynamically typed but has execute method
                 
                 # Special handling for PROC SQL - register all datasets
                 if proc_info.proc_name == 'SQL' and hasattr(proc_impl, 'register_dataset'):
@@ -469,11 +470,11 @@ class SASInterpreter:
                 
                 # Pass title to PROC PRINT if available
                 if proc_info.proc_name == 'PRINT' and self.current_title:
-                    results = proc_impl.execute(input_data, proc_info, dataset_manager=self.dataset_manager, title=self.current_title)
+                    results = proc_impl.execute(input_data, proc_info, dataset_manager=self.dataset_manager, title=self.current_title)  # type: ignore[attr-defined]
                     # Clear the title after use
                     self.current_title = None
                 else:
-                    results = proc_impl.execute(input_data, proc_info, dataset_manager=self.dataset_manager)
+                    results = proc_impl.execute(input_data, proc_info, dataset_manager=self.dataset_manager)  # type: ignore[attr-defined]
                 
                 # Display output
                 for line in results.get('output_text', []):

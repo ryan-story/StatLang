@@ -11,7 +11,7 @@ from typing import Optional
 from .interpreter import SASInterpreter
 
 
-def main():
+def main() -> None:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
         description="StatLang: Python-based statistical scripting language",
@@ -61,7 +61,7 @@ Examples:
         parser.print_help()
 
 
-def run_file(interpreter: SASInterpreter, file_path: str, verbose: bool = False):
+def run_file(interpreter: SASInterpreter, file_path: str, verbose: bool = False) -> None:
     """Run a .statlang file."""
     if not os.path.exists(file_path):
         print(f"Error: File '{file_path}' not found.", file=sys.stderr)
@@ -81,7 +81,7 @@ def run_file(interpreter: SASInterpreter, file_path: str, verbose: bool = False)
         sys.exit(1)
 
 
-def run_interactive(interpreter: SASInterpreter):
+def run_interactive(interpreter: SASInterpreter) -> None:
     """Run in interactive mode."""
     print("StatLang Interactive Mode")
     print("Type 'quit' or 'exit' to exit, 'help' for help")
@@ -113,7 +113,8 @@ def run_interactive(interpreter: SASInterpreter):
                     print("Available datasets:")
                     for ds in datasets:
                         df = interpreter.get_data_set(ds)
-                        print(f"  {ds}: {len(df)} observations, {len(df.columns)} variables")
+                        if df is not None:
+                            print(f"  {ds}: {len(df)} observations, {len(df.columns)} variables")
                 else:
                     print("No datasets available.")
                 continue
@@ -131,7 +132,7 @@ def run_interactive(interpreter: SASInterpreter):
     print("Goodbye!")
 
 
-def print_help():
+def print_help() -> None:
     """Print help information."""
     help_text = """
 StatLang Interactive Commands:
