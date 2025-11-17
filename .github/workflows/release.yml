@@ -42,7 +42,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
-          semantic-release publish -D commit_author="github-actions <actions@github.com>"
+          semantic-release publish
 
       - name: Set up Node
         uses: actions/setup-node@v4
