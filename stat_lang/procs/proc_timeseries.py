@@ -5,14 +5,14 @@ This module implements SAS PROC TIMESERIES and PROC ARIMA functionality
 for time series analysis including seasonal decomposition and ARIMA modeling.
 """
 
-import pandas as pd
+from typing import Any, Dict, Optional
+
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
 import statsmodels.api as sm
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.seasonal import seasonal_decompose
-from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 

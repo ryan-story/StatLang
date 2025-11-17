@@ -5,8 +5,8 @@ This module parses FORMAT and INFORMAT statements in DATA steps and PROC steps.
 """
 
 import re
-from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
+from typing import List, Tuple
 
 
 @dataclass
@@ -136,7 +136,7 @@ class FormatInformatParser:
                 try:
                     format_stmt = self.parse_format_statement(line)
                     format_statements.append(format_stmt)
-                except Exception as e:
+                except Exception:
                     print(f"Warning: Could not parse FORMAT statement: {line}")
         
         return format_statements
@@ -151,7 +151,7 @@ class FormatInformatParser:
                 try:
                     informat_stmt = self.parse_informat_statement(line)
                     informat_statements.append(informat_stmt)
-                except Exception as e:
+                except Exception:
                     print(f"Warning: Could not parse INFORMAT statement: {line}")
         
         return informat_statements

@@ -30,7 +30,7 @@ jobs:
       - name: Lint with ruff
         run: |
           ruff check --fix stat_lang tests || true
-          ruff check stat_lang tests --select E,F,I --ignore E501,E722,F841  # Only fail on critical errors
+          ruff check stat_lang tests --select E,F,I --ignore E501  # E501 handled by black
 
       - name: Type-check with mypy
         run: |

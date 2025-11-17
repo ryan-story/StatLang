@@ -4,16 +4,16 @@ StatLang Jupyter Kernel Implementation
 This module implements a Jupyter kernel for executing StatLang code
 in notebook environments.
 """
-import json
-import sys
 import io
-import traceback
 import logging
 import os
 import tempfile
+import traceback
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
-from contextlib import redirect_stdout, redirect_stderr
+
 from ipykernel.kernelbase import Kernel
+
 from stat_lang import SASInterpreter
 
 # Set up logging (WARNING level to suppress INFO messages)
@@ -143,7 +143,7 @@ class StatLangKernel(Kernel):
             logger.info(f"Code being passed to interpreter: {repr(code)}")
             # Execute code and capture output
             with redirect_stdout(self.output_buffer), redirect_stderr(self.error_buffer):
-                result = self.interpreter.run_code(code)
+                self.interpreter.run_code(code)
             
             # Get output and errors
             output = self.output_buffer.getvalue()

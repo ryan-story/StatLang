@@ -6,10 +6,11 @@ for notebook environments with rich output and visualization.
 """
 
 import io
-import json
+from contextlib import redirect_stderr, redirect_stdout
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
-from contextlib import redirect_stdout, redirect_stderr
-from typing import Dict, Any, List, Optional
+
 from .interpreter import SASInterpreter
 
 

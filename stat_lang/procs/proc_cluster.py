@@ -5,11 +5,13 @@ This module implements SAS PROC CLUSTER functionality for clustering analysis
 including k-means, hierarchical clustering, and HDBSCAN.
 """
 
-import pandas as pd
+from typing import Any, Dict, List
+
 import numpy as np
-from sklearn.cluster import KMeans, AgglomerativeClustering, HDBSCAN
+import pandas as pd
+from sklearn.cluster import HDBSCAN, AgglomerativeClustering, KMeans
 from sklearn.preprocessing import StandardScaler
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 

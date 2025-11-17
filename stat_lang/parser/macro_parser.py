@@ -6,8 +6,8 @@ macro variable resolution, macro definitions, and macro calls.
 """
 
 import re
-from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
+from typing import Dict, List, Tuple
 
 
 @dataclass

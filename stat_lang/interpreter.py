@@ -5,27 +5,46 @@ This module contains the core interpreter class that parses and executes
 StatLang code using Python as the backend.
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, Any, List, Optional
-import re
 import os
+import re
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
+
 from .parser.data_step_parser import DataStepParser
-from .parser.proc_parser import ProcParser
 from .parser.macro_parser import MacroParser
+from .parser.proc_parser import ProcParser
 from .procs import (
-    ProcMeans, ProcFreq, ProcPrint, ProcSort, 
-    ProcContents, ProcUnivariate, ProcCorr, ProcFactor, ProcCluster, ProcNpar1way, ProcTtest, ProcLogit, ProcTimeseries, ProcTree, ProcForest, ProcBoost, ProcLanguage, ProcSQL, ProcSurveySelect, ProcReg
+    ProcBoost,
+    ProcCluster,
+    ProcContents,
+    ProcCorr,
+    ProcFactor,
+    ProcForest,
+    ProcFreq,
+    ProcLanguage,
+    ProcLogit,
+    ProcMeans,
+    ProcNpar1way,
+    ProcPrint,
+    ProcReg,
+    ProcSort,
+    ProcSQL,
+    ProcSurveySelect,
+    ProcTimeseries,
+    ProcTree,
+    ProcTtest,
+    ProcUnivariate,
 )
-from .utils.expression_parser import ExpressionParser
-from .utils.expression_evaluator import ExpressionEvaluator
 from .utils.data_utils import DataUtils
-from .utils.libname_manager import LibnameManager
-from .utils.error_handler import ErrorHandler, ErrorType
-from .utils.macro_processor import MacroProcessor
-from .utils.format_processor import FormatProcessor
-from .utils.statlang_dataset import SasDataset, SasDatasetManager
+from .utils.error_handler import ErrorHandler
+from .utils.expression_evaluator import ExpressionEvaluator
+from .utils.expression_parser import ExpressionParser
 from .utils.format_informat_parser import FormatInformatParser
+from .utils.format_processor import FormatProcessor
+from .utils.libname_manager import LibnameManager
+from .utils.macro_processor import MacroProcessor
+from .utils.statlang_dataset import SasDataset, SasDatasetManager
 
 
 class SASInterpreter:
@@ -524,7 +543,7 @@ class SASInterpreter:
         try:
             # Use the new macro processor
             self.macro_processor._parse_let_statement(statement)
-            print(f"Macro variable set successfully")
+            print("Macro variable set successfully")
         except Exception as e:
             print(f"ERROR in %LET: {e}")
     

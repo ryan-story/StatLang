@@ -5,14 +5,15 @@ This module implements SAS PROC LANGUAGE functionality for LLM integration
 using Hugging Face transformers for open-source language model access.
 """
 
+from typing import Any, Dict, List
+
 import pandas as pd
-import numpy as np
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 # Import transformers with fallback
 try:
-    from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+    from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
     TRANSFORMERS_AVAILABLE = True
 except ImportError:
     TRANSFORMERS_AVAILABLE = False

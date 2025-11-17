@@ -5,11 +5,13 @@ This module implements SAS PROC FACTOR functionality for principal component
 analysis (PCA) and factor analysis using scikit-learn.
 """
 
-import pandas as pd
+from typing import Any, Dict, List
+
 import numpy as np
+import pandas as pd
 from sklearn.decomposition import PCA, FactorAnalysis
 from sklearn.preprocessing import StandardScaler
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -192,7 +194,6 @@ class ProcFactor:
         
         # Get results
         components = fa.components_
-        explained_variance = fa.noise_variance_
         
         # Format output
         results['output_text'].append("Factor Analysis")

@@ -5,11 +5,13 @@ This module implements SAS PROC LOGIT functionality for logistic regression
 using statsmodels for statistical inference.
 """
 
-import pandas as pd
+from typing import Any, Dict, List
+
 import numpy as np
+import pandas as pd
 import statsmodels.api as sm
 from sklearn.preprocessing import LabelEncoder
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 

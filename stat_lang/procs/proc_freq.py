@@ -5,10 +5,12 @@ This module implements SAS PROC FREQ functionality for frequency
 tables and cross-tabulations.
 """
 
-import pandas as pd
+from typing import Any, Dict, List
+
 import numpy as np
+import pandas as pd
 from scipy import stats
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 

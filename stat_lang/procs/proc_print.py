@@ -5,8 +5,10 @@ This module implements SAS PROC PRINT functionality for displaying
 dataset contents with format support.
 """
 
+from typing import Any, Dict, List
+
 import pandas as pd
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 from ..utils.format_processor import FormatProcessor
 
@@ -49,8 +51,8 @@ class ProcPrint:
         # Apply WHERE condition if present
         where_condition = proc_info.options.get('where', '')
         if where_condition:
-            from ..utils.expression_parser import ExpressionParser
             from ..utils.data_utils import DataUtils
+            from ..utils.expression_parser import ExpressionParser
             expr_parser = ExpressionParser()
             data_utils = DataUtils()
             display_data = data_utils.apply_where_condition(display_data, where_condition, expr_parser)

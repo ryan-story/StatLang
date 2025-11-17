@@ -5,10 +5,12 @@ This module implements SAS PROC TTEST functionality for t-tests including
 independent samples, paired samples, and one-sample t-tests.
 """
 
-import pandas as pd
+from typing import Any, Dict
+
 import numpy as np
+import pandas as pd
 from scipy import stats
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 

@@ -6,9 +6,10 @@ Python operations on DataFrames.
 """
 
 import re
-import pandas as pd
-from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
+from typing import Dict, List
+
+import pandas as pd
 
 
 @dataclass

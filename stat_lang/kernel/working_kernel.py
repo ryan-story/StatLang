@@ -3,12 +3,12 @@
 Working StatLang Jupyter Kernel Implementation
 """
 
-import json
-import sys
 import io
 import traceback
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
+
 from ipykernel.kernelbase import Kernel
+
 from stat_lang import SASInterpreter
 
 
@@ -57,7 +57,7 @@ class WorkingStatLangKernel(Kernel):
         try:
             # Execute code and capture output
             with redirect_stdout(self.output_buffer), redirect_stderr(self.error_buffer):
-                result = self.interpreter.run_code(code)
+                self.interpreter.run_code(code)
             
             # Get output and errors
             output = self.output_buffer.getvalue()

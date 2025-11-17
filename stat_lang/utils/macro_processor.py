@@ -9,12 +9,11 @@ This module implements the macro system including:
 - Macro execution and code generation
 """
 
-import re
 import ast
-import json
-from typing import Dict, List, Any, Optional, Union
-from dataclasses import dataclass
+import re
 from collections import deque
+from dataclasses import dataclass
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -263,15 +262,8 @@ class MacroProcessor:
         
         # Simple evaluation using Python's eval (with safety considerations)
         try:
-            # Only allow safe operations
-            allowed_names = {
-                '__builtins__': {},
-                'True': True,
-                'False': False,
-                'None': None
-            }
             return bool(ast.literal_eval(condition))
-        except:
+        except Exception:
             # Fallback to string comparison
             return condition.lower() in ('true', '1', 'yes')
     

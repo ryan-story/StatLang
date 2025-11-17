@@ -5,9 +5,9 @@ This module provides a CLI for running .statlang files from the command line.
 """
 
 import argparse
-import sys
 import os
-from typing import Optional
+import sys
+
 from .interpreter import SASInterpreter
 
 

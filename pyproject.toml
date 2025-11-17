@@ -94,9 +94,6 @@ select = [
 ]
 ignore = [
     "E501",  # line too long (handled by black)
-    "E722",  # bare except (existing codebase)
-    "F841",  # unused variable (some false positives)
-    "W293",  # blank line contains whitespace (auto-fixable but many in existing code)
 ]
 
 [tool.ruff.lint.per-file-ignores]

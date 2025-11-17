@@ -5,10 +5,12 @@ This module implements SAS PROC UNIVARIATE functionality for detailed
 univariate analysis including descriptive statistics and distribution tests.
 """
 
-import pandas as pd
+from typing import Any, Dict
+
 import numpy as np
+import pandas as pd
 from scipy import stats
-from typing import Dict, List, Any, Optional
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -98,24 +100,24 @@ class ProcUnivariate:
         if n <= 5000:
             try:
                 shapiro_stat, shapiro_p = stats.shapiro(clean_series)
-                normality_test = "Shapiro-Wilk"
-                normality_stat = shapiro_stat
-                normality_p = shapiro_p
-            except:
-                normality_test = "Not available"
-                normality_stat = None
-                normality_p = None
+                _normality_test = "Shapiro-Wilk"
+                _normality_stat = shapiro_stat
+                _normality_p = shapiro_p
+            except Exception:
+                _normality_test = "Not available"
+                _normality_stat = None
+                _normality_p = None
         else:
             # For large samples, use Kolmogorov-Smirnov test
             try:
                 ks_stat, ks_p = stats.kstest(clean_series, 'norm', args=(mean, std))
-                normality_test = "Kolmogorov-Smirnov"
-                normality_stat = ks_stat
-                normality_p = ks_p
-            except:
-                normality_test = "Not available"
-                normality_stat = None
-                normality_p = None
+                _normality_test = "Kolmogorov-Smirnov"
+                _normality_stat = ks_stat
+                _normality_p = ks_p
+            except Exception:
+                _normality_test = "Not available"
+                _normality_stat = None
+                _normality_p = None
         
         # Format output
         output = []
@@ -136,7 +138,7 @@ class ProcUnivariate:
         
         # Basic Statistical Measures
         output.append("Basic Statistical Measures")
-        output.append(f"  Location                    Variability")
+        output.append("  Location                    Variability")
         output.append(f"  Mean      {mean:>10.6f}     Std Deviation     {std:>10.6f}")
         output.append(f"  Median    {np.median(clean_series):>10.6f}     Variance          {var:>10.6f}")
         output.append(f"  Mode      {stats.mode(clean_series, keepdims=True)[0][0]:>10.6f}     Range             {range_val:>10.6f}")
@@ -146,7 +148,7 @@ class ProcUnivariate:
         # Tests for Location
         output.append("Tests for Location: Mu0=0")
         t_stat, t_p = stats.ttest_1samp(clean_series, 0)
-        output.append(f"  Test           -Statistic-    -----p Value------")
+        output.append("  Test           -Statistic-    -----p Value------")
         output.append(f"  Student's t    {t_stat:>10.6f}    Pr > |t|    {t_p:>10.6f}")
         # Use binomial test from scipy.stats
         from scipy.stats import binom

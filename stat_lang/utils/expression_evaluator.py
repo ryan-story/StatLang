@@ -6,10 +6,11 @@ for variable assignments, IF/THEN/ELSE statements, and other
 data step operations.
 """
 
-import pandas as pd
-import numpy as np
 import re
-from typing import Any, Dict, List, Union, Optional
+
+import numpy as np
+import pandas as pd
+
 from .expression_parser import ExpressionParser
 
 
@@ -125,7 +126,7 @@ class ExpressionEvaluator:
                                 # Try to evaluate as expression
                                 result = self._evaluate_expression(value, data)
                                 data.loc[mask, var_name] = result[mask]
-                        except:
+                        except Exception:
                             data.loc[mask, var_name] = value
         
         return data
@@ -240,7 +241,7 @@ class ExpressionEvaluator:
             else:
                 return pd.Series([func(*evaluated_args)] * len(data), index=data.index)
                 
-        except:
+        except Exception:
             return pd.Series([0] * len(data), index=data.index)
     
     def _substr(self, string: str, start: int, length: int = None) -> str:
@@ -306,7 +307,7 @@ class ExpressionEvaluator:
         if '>' in condition:
             parts = condition.split('>')
             if len(parts) == 2:
-                var, val = parts[0].strip(), parts[1].strip()
+                _var, _val = parts[0].strip(), parts[1].strip()
                 if index is not None:
                     # Vectorized comparison
                     return pd.Series([True] * len(index), index=index)  # Placeholder

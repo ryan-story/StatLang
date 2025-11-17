@@ -3,9 +3,10 @@
 StatLang Jupyter Kernel Entry Point
 """
 
-import sys
-from .statlang_kernel import StatLangKernel
 from ipykernel.kernelapp import IPKernelApp
+
+from .statlang_kernel import StatLangKernel
+
 
 def main():
     """Main entry point for the kernel."""

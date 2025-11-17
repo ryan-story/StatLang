@@ -6,8 +6,8 @@ for execution by the appropriate PROC implementation.
 """
 
 import re
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 
 @dataclass

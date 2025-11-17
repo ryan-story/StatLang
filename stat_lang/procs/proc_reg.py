@@ -5,11 +5,13 @@ This module implements SAS PROC REG functionality for linear regression analysis
 including model fitting, predictions, and residual analysis.
 """
 
-import pandas as pd
+from typing import Any, Dict
+
 import numpy as np
+import pandas as pd
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
-from typing import Dict, List, Any, Optional
+from sklearn.metrics import mean_squared_error
+
 from ..parser.proc_parser import ProcStatement
 
 
@@ -35,9 +37,6 @@ class ProcReg:
             'output_text': [],
             'output_data': None
         }
-        
-        # Parse options
-        options = proc_info.options
         
         # Get statements
         statements = proc_info.statements
@@ -132,7 +131,7 @@ class ProcReg:
             if output_info:
                 output_data = regression_data.copy()
                 output_data[f"predicted_{dep_var}"] = model.predict(X)
-                output_data[f"residuals"] = y - model.predict(X)
+                output_data["residuals"] = y - model.predict(X)
                 
                 # Store output dataset in results for interpreter to handle
                 results['output_data'] = output_data
