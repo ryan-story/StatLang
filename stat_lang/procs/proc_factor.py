@@ -156,7 +156,7 @@ class ProcFactor:
         results['output_text'].append("")
         
         # Kaiser criterion
-        kaiser_count = np.sum(explained_variance > 1.0)
+        kaiser_count: int = int(np.sum(explained_variance > 1.0))
         results['output_text'].append(f"Kaiser criterion (eigenvalue > 1): {kaiser_count} components")
         results['output_text'].append("")
         
