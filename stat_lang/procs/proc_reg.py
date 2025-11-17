@@ -235,7 +235,7 @@ class ProcReg:
     def _parse_score_statement(self, stmt: str) -> Dict[str, Any]:
         """Parse SCORE statement."""
         # SCORE DATA=dataset OUT=output_dataset PREDICTED=predicted_var;
-        score_info = {'data': None, 'out': None, 'predicted': None}
+        score_info: Dict[str, Any] = {'data': None, 'out': None, 'predicted': None}
         
         # Extract DATA= option
         if 'DATA=' in stmt.upper():
