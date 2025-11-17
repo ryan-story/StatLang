@@ -63,5 +63,21 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
         run: |
+          set +e
           vsce publish
+          status=$?
+          set -e
+
+          if [ $status -ne 0 ]; then
+            echo "vsce publish failed with status $status. Checking if version already exists..."
+            VERSION=$(node -p "require('./package.json').version")
+
+            # Check if extension@version already exists in VS Code Marketplace
+            if vsce show "RyanBlakeStory.statlang@$VERSION" > /dev/null 2>&1; then
+              echo "Extension version $VERSION already exists. Skipping publish."
+            else
+              echo "vsce publish failed for a reason other than duplicate version."
+              exit $status
+            fi
+          fi
 
