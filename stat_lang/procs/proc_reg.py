@@ -213,7 +213,7 @@ class ProcReg:
     def _parse_output_statement(self, stmt: str) -> Dict[str, Any]:
         """Parse OUTPUT statement."""
         # OUTPUT OUT=dataset p=predicted_var r=residuals;
-        output_info = {'out': None, 'predicted': None, 'residuals': None}
+        output_info: Dict[str, Any] = {'out': None, 'predicted': None, 'residuals': None}
         
         # Extract OUT= option
         if 'OUT=' in stmt.upper():
