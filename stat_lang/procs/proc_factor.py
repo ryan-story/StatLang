@@ -32,7 +32,7 @@ class ProcFactor:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -101,7 +101,7 @@ class ProcFactor:
     
     def _perform_pca(self, data: pd.DataFrame, var_names: List[str], n_components: int) -> Dict[str, Any]:
         """Perform Principal Component Analysis."""
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -183,7 +183,7 @@ class ProcFactor:
     
     def _perform_factor_analysis(self, data: pd.DataFrame, var_names: List[str], n_factors: int) -> Dict[str, Any]:
         """Perform Factor Analysis."""
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }

@@ -11,7 +11,6 @@ import tempfile
 import traceback
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
-
 from typing import Optional
 
 from ipykernel.kernelbase import Kernel

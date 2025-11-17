@@ -40,7 +40,7 @@ class ProcTree:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -268,7 +268,7 @@ class ProcForest:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -474,7 +474,7 @@ class ProcBoost:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }

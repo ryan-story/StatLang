@@ -31,7 +31,7 @@ class ProcFreq:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -76,7 +76,7 @@ class ProcFreq:
     
     def _create_frequency_table(self, data: pd.DataFrame, var: str, options: str = "") -> Dict[str, Any]:
         """Create a one-way frequency table."""
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
@@ -120,7 +120,7 @@ class ProcFreq:
     
     def _create_crosstab(self, data: pd.DataFrame, var1: str, var2: str, options: str = "") -> Dict[str, Any]:
         """Create a two-way cross-tabulation table."""
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }

@@ -33,7 +33,7 @@ class ProcReg:
         Returns:
             Dictionary containing results and output data
         """
-        results = {
+        results: Dict[str, Any] = {
             'output_text': [],
             'output_data': None
         }
