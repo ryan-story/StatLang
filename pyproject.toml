@@ -49,6 +49,8 @@ dev = [
     "mypy>=1.0.0",
     "ruff>=0.1.0",
     "black>=23.0.0",
+    "build>=1.0.0",
+    "python-semantic-release>=8.0.0",
 ]
 
 [tool.mypy]
@@ -109,3 +111,14 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"
+
+[tool.semantic_release]
+branch = "main"
+upload_to_pypi = true
+upload_to_release = true
+build_command = "python -m build"
+version_toml = ["pyproject.toml:project.version"]
+version_variable = ["stat_lang/__init__.py:__version__"]
+version_pattern = [
+    'vscode-extension/package.json:"version": "{version}"'
+]
