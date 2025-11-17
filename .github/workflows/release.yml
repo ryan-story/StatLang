@@ -49,6 +49,11 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Install VS Code extension dependencies
+        working-directory: vscode-extension
+        run: |
+          npm ci
+
       - name: Install vsce
         run: |
           npm install -g @vscode/vsce

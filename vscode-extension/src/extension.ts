@@ -180,20 +180,20 @@ async function handleProcessOutput(process: ChildProcess, source: string): Promi
         let hasError = false;
         
         // Handle stdout
-        process.stdout?.on('data', (data) => {
+        process.stdout?.on('data', (data: Buffer) => {
             const output = data.toString();
             outputChannel.append(output);
         });
         
         // Handle stderr
-        process.stderr?.on('data', (data) => {
+        process.stderr?.on('data', (data: Buffer) => {
             const error = data.toString();
             logChannel.append(`[${source}] ${error}`);
             hasError = true;
         });
         
         // Handle process completion
-        process.on('close', (code) => {
+        process.on('close', (code: number | null) => {
             if (code === 0) {
                 outputChannel.appendLine(`\nExecution completed successfully.`);
                 resolve();
@@ -208,7 +208,7 @@ async function handleProcessOutput(process: ChildProcess, source: string): Promi
         });
         
         // Handle process errors
-        process.on('error', (error) => {
+        process.on('error', (error: Error) => {
             const errorMessage = `Process error: ${error.message}`;
             outputChannel.appendLine(errorMessage);
             reject(error);
@@ -278,15 +278,15 @@ function executeCommand(command: string, args: string[]): Promise<string> {
         let output = '';
         let error = '';
         
-        process.stdout?.on('data', (data) => {
+        process.stdout?.on('data', (data: Buffer) => {
             output += data.toString();
         });
         
-        process.stderr?.on('data', (data) => {
+        process.stderr?.on('data', (data: Buffer) => {
             error += data.toString();
         });
         
-        process.on('close', (code) => {
+        process.on('close', (code: number | null) => {
             if (code === 0) {
                 resolve(output);
             } else {
@@ -294,7 +294,7 @@ function executeCommand(command: string, args: string[]): Promise<string> {
             }
         });
         
-        process.on('error', (err) => {
+        process.on('error', (err: Error) => {
             reject(err);
         });
     });

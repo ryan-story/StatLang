@@ -88,15 +88,15 @@ export class StatLangNotebookProvider {
             let output = '';
             let error = '';
 
-            process.stdout.on('data', (data) => {
+            process.stdout.on('data', (data: Buffer) => {
                 output += data.toString();
             });
 
-            process.stderr.on('data', (data) => {
+            process.stderr.on('data', (data: Buffer) => {
                 error += data.toString();
             });
 
-            process.on('close', (code) => {
+            process.on('close', (code: number | null) => {
                 if (code === 0) {
                     try {
                         const result = JSON.parse(output);
@@ -114,7 +114,7 @@ export class StatLangNotebookProvider {
                 }
             });
 
-            process.on('error', (err) => {
+            process.on('error', (err: Error) => {
                 reject(err);
             });
         });
