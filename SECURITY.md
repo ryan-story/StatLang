@@ -67,7 +67,7 @@ We recognize security researchers who help us keep Open-SAS and our users safe b
 ## Contact
 
 For security-related questions or concerns, please contact:
-- **Email**: ryan@stryve.com
+- **Email**: rbyrots@gmail.com
 - **GitHub**: Use the Security Advisory system
 - **Issues**: For non-security related questions, use the regular issue tracker
 
