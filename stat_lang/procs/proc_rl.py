@@ -56,12 +56,11 @@ class ProcRL:
         # Build transition table from data
         transitions: Dict[Tuple[int, int], List[Tuple[int, float]]] = {}
         for _, row in data.iterrows():
-            s = state_map.get(row[state_col])
-            a = action_map.get(row[action_col])
+            s_idx = state_map.get(row[state_col])
+            a_idx = action_map.get(row[action_col])
             r = float(row[reward_var])
-            if s is not None and a is not None:
-                key = (s, a)
-                transitions.setdefault(key, []).append((s, r))
+            if s_idx is not None and a_idx is not None:
+                transitions.setdefault((s_idx, a_idx), []).append((s_idx, r))
 
         # Q-learning
         Q = np.zeros((n_states, n_actions))
@@ -69,23 +68,23 @@ class ProcRL:
 
         total_rewards: List[float] = []
         for ep in range(episodes):
-            s = rng.integers(0, n_states)
+            s = int(rng.integers(0, n_states))
             ep_reward = 0.0
             for _ in range(100):  # max steps per episode
                 if rng.random() < epsilon:
-                    a = rng.integers(0, n_actions)
+                    a = int(rng.integers(0, n_actions))
                 else:
                     a = int(np.argmax(Q[s]))
 
                 key = (s, a)
                 if key in transitions:
-                    next_s, r = transitions[key][rng.integers(0, len(transitions[key]))]
+                    next_s, r = transitions[key][int(rng.integers(0, len(transitions[key])))]
                 else:
                     next_s, r = s, 0.0
 
-                Q[s, a] += lr * (r + gamma * np.max(Q[next_s]) - Q[s, a])
+                Q[s, a] += lr * (r + gamma * float(np.max(Q[next_s])) - Q[s, a])
                 ep_reward += r
-                s = next_s
+                s = int(next_s)
             total_rewards.append(ep_reward)
 
         results['output_text'].append("PROC RL - Reinforcement Learning (Q-Learning)")
