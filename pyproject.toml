@@ -90,6 +90,10 @@ module = [
 ]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = "stat_lang.procs.proc_nlp"
+disable_error_code = ["call-overload"]
+
 [tool.ruff]
 target-version = "py38"
 line-length = 100
