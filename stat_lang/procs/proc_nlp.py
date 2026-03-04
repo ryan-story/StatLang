@@ -53,9 +53,11 @@ class ProcNLP:
             return results
 
         try:
-            _model: Any = model_name if model_name else None
+            _pipe_kw: Dict[str, Any] = {}
+            if model_name:
+                _pipe_kw['model'] = model_name
             if mode == 'sentiment':
-                pipe = hf_pipeline('sentiment-analysis', model=_model)
+                pipe = hf_pipeline('sentiment-analysis', **_pipe_kw)
                 preds = pipe(texts, truncation=True, max_length=512)
                 labels = [p['label'] for p in preds]
                 scores = [p['score'] for p in preds]
@@ -68,7 +70,7 @@ class ProcNLP:
                 results['output_data'] = out
 
             elif mode in ('classify', 'classification'):
-                pipe = hf_pipeline('text-classification', model=_model)
+                pipe = hf_pipeline('text-classification', **_pipe_kw)
                 preds = pipe(texts, truncation=True, max_length=512)
                 out = data.copy()
                 out['predicted_label'] = pd.Series([p['label'] for p in preds], index=data[text_col].dropna().index)
@@ -79,7 +81,7 @@ class ProcNLP:
                 results['output_data'] = out
 
             elif mode in ('ner', 'entity'):
-                pipe = hf_pipeline('ner', model=_model, aggregation_strategy='simple')
+                pipe = hf_pipeline('ner', aggregation_strategy='simple', **_pipe_kw)
                 all_entities: List[Dict] = []
                 for i, text in enumerate(texts):
                     ents = pipe(text)
@@ -96,7 +98,7 @@ class ProcNLP:
                 results['output_data'] = out
 
             elif mode in ('summarize', 'summarization'):
-                pipe = hf_pipeline('summarization', model=_model)
+                pipe = hf_pipeline('summarization', **_pipe_kw)
                 summaries = pipe(texts, max_length=130, min_length=30, truncation=True)
                 out = data.copy()
                 out['summary'] = pd.Series([s['summary_text'] for s in summaries],
