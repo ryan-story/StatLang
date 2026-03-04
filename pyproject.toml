@@ -37,9 +37,14 @@ dependencies = [
     "requests>=2.25.0",
     "transformers>=4.20.0",
     "torch>=1.12.0",
+    "torchvision>=0.13.0",
     "duckdb>=1.0.0",
     "jupyter>=1.0.0",
     "ipykernel>=6.0.0",
+    "lifelines>=0.27.0",
+    "Pillow>=9.0.0",
+    "openpyxl>=3.0.0",
+    "pyarrow>=10.0.0",
 ]
 
 [project.optional-dependencies]
@@ -76,9 +81,12 @@ module = [
     "statsmodels.*",
     "transformers.*",
     "torch.*",
+    "torchvision.*",
     "duckdb.*",
     "jupyter.*",
     "ipykernel.*",
+    "lifelines.*",
+    "PIL.*",
 ]
 ignore_missing_imports = true
 

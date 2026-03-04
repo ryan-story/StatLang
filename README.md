@@ -16,70 +16,102 @@ StatLang provides an open-source environment for statistical analysis by offerin
 - **Cross-platform compatibility** (Windows, macOS, Linux)
 - **Open source** and free to use
 
-### 🌟 **What Makes StatLang Special?**
+### What Makes StatLang Special?
 
-- **🤖 AI Integration**: Built-in **PROC LANGUAGE** with LLM capabilities for intelligent data analysis
-- **🧠 Complete ML Pipeline**: From data exploration to model deployment using familiar, concise syntax
-- **💾 Modern SQL**: **PROC SQL** powered by DuckDB for high-performance data querying
-- **🔧 Robust language features**: Macro system, format system, and statistical procedures
-- **📊 Rich Visualizations**: Professional output formatting with TITLE statements and structured results
+- **AI Integration**: Built-in **PROC LANGUAGE** with LLM capabilities for intelligent data analysis
+- **Complete ML Pipeline**: From data exploration to model deployment using familiar, concise syntax
+- **Deep Learning**: PyTorch-powered DNN training, NLP, computer vision (including object detection), and reinforcement learning
+- **Modern SQL**: **PROC SQL** powered by DuckDB for high-performance data querying
+- **Robust language features**: Macro system, format system, and 38+ statistical/ML procedures
+- **Rich Visualizations**: Professional output formatting with TITLE statements and structured results
 
 ## Features
 
 ### Core Interpreter
-- Scripting-based DATA step functionality with inline data support
-- Statistical procedures (MEANS, FREQ, SORT, PRINT)
-- Concise data manipulation and analysis syntax
+- DATA step with MERGE, ARRAY, RETAIN, DO loops (iterative/while/until), FIRST./LAST., LAG/DIF
+- INFILE/FILE I/O, INPUT parsing, and PUT output
+- DATALINES/CARDS for inline data
+- Subsetting IF and conditional IF/THEN/ELSE
+- Row-by-row and vectorised execution paths
 - Python pandas/numpy backend for performance
-- Clean, professional output with familiar formatting
+
+### Macro System
+- `%MACRO` / `%MEND` definitions with parameter lists
+- `%LET`, `%PUT`, `&var` substitution
+- `%IF` / `%THEN` / `%ELSE`, `%DO` / `%END` control flow
+- `%INCLUDE` file injection (recursive with depth limit)
+- `%SYSEVALF` arithmetic, `%SYSFUNC` (30+ built-in functions)
+- `%GLOBAL` / `%LOCAL` scoping
+- System variables: `&SYSDATE9`, `&SYSLAST`, `&SYSCC`, `&SYSJOBID`
+
+### Model Store and Pipeline
+- In-memory model store with optional pickle persistence
+- Save, load, list, and delete trained models across procedures
+- `run_pipeline()` for end-to-end `.statlang` file execution
 
 ### Jupyter Notebook Support
 - StatLang kernel for Jupyter notebooks
 - Interactive statistical programming in notebook environment
 - Rich output display with formatted tables
-- Dataset visualization and exploration
+- Dataset visualisation and exploration
 
-- ### VS Code Extension
+### VS Code Extension
 - Syntax highlighting for `.statlang` files
 - Code snippets for common statistical analysis patterns
 - File execution directly from VS Code
 - Notebook support for interactive analysis
 
-### Supported Features
+### Supported Procedures
 
-#### 📊 **Statistical Procedures**
-- **PROC MEANS**: Descriptive statistics with CLASS variables and OUTPUT statements
-- **PROC FREQ**: Frequency tables and cross-tabulations with options
-- **PROC SORT**: Data sorting with ascending/descending order
-- **PROC PRINT**: Data display and formatting
-- **PROC REG**: Linear regression analysis with MODEL, OUTPUT, and SCORE statements
-- **PROC UNIVARIATE**: Detailed univariate analysis with distribution diagnostics
-- **PROC CORR**: Correlation analysis (Pearson, Spearman)
-- **PROC FACTOR**: Principal component analysis and factor analysis
-- **PROC CLUSTER**: Clustering methods (k-means, hierarchical)
-- **PROC NPAR1WAY**: Nonparametric tests (Mann-Whitney, Kruskal-Wallis)
-- **PROC TTEST**: T-tests (independent and paired)
-- **PROC LOGIT**: Logistic regression modeling
-- **PROC TIMESERIES**: Time series analysis and seasonal decomposition
-- **PROC SURVEYSELECT**: Random sampling with SRS method, SAMPRATE/N options, and OUTALL flag
+#### Statistical Procedures
+| Procedure | Description |
+|-----------|-------------|
+| **PROC MEANS** | Descriptive statistics with CLASS variables and OUTPUT |
+| **PROC FREQ** | Frequency tables and cross-tabulations |
+| **PROC SORT** | Data sorting with ascending/descending order |
+| **PROC PRINT** | Data display and formatting |
+| **PROC REG** | Linear regression with MODEL, OUTPUT, and SCORE |
+| **PROC UNIVARIATE** | Detailed univariate analysis with distribution diagnostics |
+| **PROC CORR** | Correlation analysis (Pearson, Spearman) |
+| **PROC FACTOR** | Principal component and factor analysis |
+| **PROC CLUSTER** | Clustering methods (k-means, hierarchical) |
+| **PROC NPAR1WAY** | Nonparametric tests (Mann-Whitney, Kruskal-Wallis) |
+| **PROC TTEST** | T-tests (independent and paired) |
+| **PROC LOGIT** | Logistic regression |
+| **PROC TIMESERIES** | Time series analysis and seasonal decomposition |
+| **PROC SURVEYSELECT** | Random sampling (SRS, SAMPRATE/N, OUTALL) |
+| **PROC GLM** | General Linear Models via statsmodels (Type III ANOVA) |
+| **PROC ANOVA** | Balanced Analysis of Variance |
+| **PROC GENMOD** | Generalised Linear Models (Gaussian, Binomial, Poisson, Gamma) |
+| **PROC MIXED** | Mixed / multilevel models (random intercepts & slopes) |
+| **PROC ROBUSTREG** | Robust regression (M-estimation via RLM) |
+| **PROC LIFEREG** | Parametric survival (Weibull, Log-Normal, Log-Logistic AFT) |
+| **PROC PHREG** | Cox proportional hazards regression |
+| **PROC DISCRIM** | Discriminant analysis (LDA / QDA) |
+| **PROC PRINCOMP** | Principal Component Analysis with StandardScaler |
 
-#### 🤖 **Machine Learning Procedures**
-- **PROC TREE**: Decision trees for classification and regression
-- **PROC FOREST**: Random forests for ensemble learning
-- **PROC BOOST**: Gradient boosting for advanced modeling
+#### Machine Learning Procedures
+| Procedure | Description |
+|-----------|-------------|
+| **PROC TREE** | Decision trees for classification and regression |
+| **PROC FOREST** | Random forests for ensemble learning |
+| **PROC BOOST** | Gradient boosting |
+| **PROC DNN** | PyTorch feedforward neural networks (classification & regression) |
+| **PROC NLP** | HuggingFace NLP (sentiment, classification, NER, summarisation) |
+| **PROC CVISION** | Image classification (ResNet, VGG) and Faster R-CNN object detection |
+| **PROC RL** | Tabular Q-learning for reinforcement learning |
+| **PROC LLM** | Text generation, fill-mask, and QA via HuggingFace |
 
-#### 💻 **Advanced Features**
-- **PROC SQL**: SQL query processing with DuckDB backend
-- **PROC LANGUAGE**: Built-in LLM integration for text generation, Q&A, and data analysis
-- **Macro System**: Complete macro facility with %MACRO/%MEND, %LET, & substitution, %PUT, %IF/%THEN/%ELSE, %DO/%END
-- **Format System**: Built-in date/time, numeric, and currency formats with metadata persistence
-- **TITLE Statements**: Professional output formatting
-
-#### 🔧 **Core Data Processing**
-- **DATA Steps**: Variable creation, conditional logic, DATALINES input
-- **Macro variables**: %LET, %PUT statements
-- **Libraries**: LIBNAME functionality
-- **NOPRINT option**: Silent execution for procedures
+#### Data Management Procedures
+| Procedure | Description |
+|-----------|-------------|
+| **PROC TRANSPOSE** | Reshape data (wide / long) with BY group support |
+| **PROC APPEND** | Concatenate datasets with FORCE option |
+| **PROC DATASETS** | Delete, rename, and list datasets |
+| **PROC EXPORT** | Export to CSV, Excel, JSON, Parquet |
+| **PROC IMPORT** | Import from CSV, Excel, JSON, Parquet |
+| **PROC SQL** | SQL query processing with DuckDB backend |
+| **PROC LANGUAGE** | LLM-powered text generation, Q&A, and data analysis |
 
 ## Installation
 
@@ -100,35 +132,6 @@ jupyter kernelspec list
 ### VS Code Extension
 1. Install from VS Code Marketplace: "StatLang" by RyanBlakeStory
 2. Or install from source (see Development section)
-
-## 🚀 **Exciting New Features**
-
-### 🤖 **LANGUAGE - AI-Powered Analysis**
-```statlang
-language prompt="Analyze the correlation between income and spending in our dataset";
-run;
-```
-**Built-in LLM integration** for text generation, Q&A, and intelligent data analysis using Hugging Face transformers!
-
-### 🧠 **Complete Machine Learning Workflow**
-Check out our **[ML Project Demo](examples/ML_project_in_statlang.ipynb)** - a comprehensive regression analysis project showcasing:
-- **PROC UNIVARIATE** for distribution exploration
-- **PROC SURVEYSELECT** for train/test splitting  
-- **PROC REG** with MODEL, OUTPUT, and SCORE statements
-- **Macro system** for reusable analysis workflows
-- **Complete ML pipeline** in pure StatLang syntax
-
-### 💾 **SQL - Modern Data Querying**
-```statlang
-sql;
-  select age, income, spend,
-         case when income > 60000 then 'High' else 'Low' end as income_group
-  from work.customers
-  where age between 25 and 50
-  order by income desc;
-quit;
-```
-**DuckDB-powered SQL** processing with full dataset integration!
 
 ## Quick Start
 
@@ -161,7 +164,46 @@ run;
 ''')
 ```
 
-### 2. Jupyter Notebook Usage
+### 2. Macro-Powered Pipeline
+```statlang
+%LET target = spend;
+%LET features = age income;
+
+%macro train_and_evaluate(depvar, indepvars);
+    proc reg data=work.train;
+        model &depvar = &indepvars;
+        output out=work.results p=predicted r=residuals;
+    run;
+
+    proc means data=work.results mean;
+        var residuals;
+    run;
+%mend;
+
+%train_and_evaluate(&target, &features);
+```
+
+### 3. Object Detection (Deep Learning)
+```statlang
+/* Generate synthetic training data */
+proc cvision mode=generate_samples out=annotations
+     n_train=30 n_test=10 img_size=128 seed=42;
+run;
+
+/* Fine-tune Faster R-CNN */
+proc cvision data=train_annot mode=train_detect
+     model_name=shape_detector epochs=5 lr=0.005;
+    image image_path;
+run;
+
+/* Score new images with the trained model */
+proc cvision data=test_images mode=serve out=detections
+     model_name=shape_detector confidence=0.5;
+    image image_path;
+run;
+```
+
+### 4. Jupyter Notebook Usage
 1. Install the StatLang kernel:
    ```bash
    python -m statlang.kernel install
@@ -170,13 +212,13 @@ run;
 3. Select "statlang" as the kernel
 4. Write StatLang code in cells and execute
 
-### 3. VS Code Usage
+### 5. VS Code Usage
 1. Install the StatLang extension from the marketplace
 2. Create a new file with `.statlang` extension
 3. Write your StatLang code
-4. Use `Ctrl+Shift+P` → "StatLang: Run File" to execute
+4. Use `Ctrl+Shift+P` > "StatLang: Run File" to execute
 
-### 4. Command Line Usage
+### 6. Command Line Usage
 ```bash
 # Run StatLang code from file
 python -m statlang.cli run example.statlang
@@ -185,53 +227,65 @@ python -m statlang.cli run example.statlang
 python -m statlang.cli interactive
 ```
 
-## 📚 **Examples & Demos**
+## Examples & Demos
 
-### 🎯 **Complete ML Project**
+### ML Regression Project
 **[ML Project Demo](examples/ML_project_in_statlang.ipynb)** - A comprehensive machine learning workflow:
 - Synthetic dataset creation with 30 observations
 - **PROC UNIVARIATE** for distribution analysis
 - **PROC SURVEYSELECT** for train/test splitting (70/30)
 - **PROC REG** with MODEL, OUTPUT, and SCORE statements
 - Macro-based reusable analysis functions
-- Complete regression analysis pipeline
 
-### 📊 **Comprehensive Walkthrough**
+### Object Detection Walkthrough
+**[Object Detection Pipeline](examples/object_detection_walkthrough.ipynb)** - End-to-end computer vision:
+- Synthetic shape data generation with bounding-box annotations
+- Faster R-CNN fine-tuning with **PROC CVISION**
+- Model store persistence and serving
+- Composable `%MACRO` pipeline with `%LET`-driven configuration
+
+### Comprehensive Walkthrough
 **[StatLang Walkthrough](examples/statlang_walkthrough.ipynb)** - Complete feature demonstration:
 - All statistical procedures with examples
 - Macro system demonstrations
 - Format system usage
 - Advanced data manipulation techniques
-- Real-world analysis scenarios
 
 ## Project Structure
 
 ```
 StatLang/
-├── stat_lang/                # Core Python package
+├── stat_lang/                  # Core Python package
 │   ├── __init__.py
-│   ├── interpreter.py        # Main statistical interpreter
-│   ├── cli.py               # Command line interface
-│   ├── kernel/              # Jupyter kernel implementation
-│   │   ├── statlang_kernel.py   # Main kernel
-│   │   └── install.py       # Kernel installation
-│   ├── parser/              # Syntax parser
-│   │   ├── data_step_parser.py
-│   │   ├── proc_parser.py
+│   ├── interpreter.py          # Main interpreter
+│   ├── cli.py                  # Command line interface
+│   ├── pipeline.py             # End-to-end pipeline runner
+│   ├── kernel/                 # Jupyter kernel implementation
+│   │   ├── statlang_kernel.py
+│   │   └── install.py
+│   ├── parser/                 # Syntax parsers
+│   │   ├── data_step_parser.py # DATA step (MERGE, ARRAY, DO, etc.)
+│   │   ├── proc_parser.py      # Generic PROC option scanner
 │   │   └── macro_parser.py
-│   ├── procs/               # Statistical procedure implementations
-│   │   ├── proc_means.py
-│   │   ├── proc_freq.py
-│   │   ├── proc_sort.py
-│   │   └── proc_print.py
-│   └── utils/               # Utility functions
+│   ├── procs/                  # 38+ procedure implementations
+│   │   ├── proc_means.py       # Statistical procs
+│   │   ├── proc_reg.py
+│   │   ├── proc_glm.py
+│   │   ├── proc_dnn.py         # Deep learning procs
+│   │   ├── proc_cvision.py     # Computer vision / object detection
+│   │   ├── proc_export.py      # Data management procs
+│   │   └── ...
+│   └── utils/
 │       ├── expression_evaluator.py
+│       ├── macro_processor.py  # Macro engine
+│       ├── model_store.py      # In-memory + pickle model store
 │       ├── data_utils.py
 │       └── libname_manager.py
-├── vscode-extension/         # VS Code extension
-├── examples/                # Example files and demo notebook
-├── media/                   # Logo and icons
-├── setup.py                 # Package setup
+├── tests/                      # Test suite (55+ tests)
+├── examples/                   # Example notebooks & scripts
+├── vscode-extension/           # VS Code extension
+├── media/                      # Logo and icons
+├── pyproject.toml              # Package config & dependencies
 └── README.md
 ```
 
@@ -239,38 +293,28 @@ StatLang/
 
 ### Setup Development Environment
 ```bash
-git clone https://github.com/ryan-story/StatLang.git
+git clone https://github.com/Stryve-Analytics/StatLang.git
 cd StatLang
-pip install -e .
+pip install -e ".[dev]"
 ```
 
 ### Running Tests
 ```bash
-# Run basic functionality tests
-python -c "from statlang import StatLangInterpreter; print('StatLang loaded successfully')"
+# Run the full test suite
+pytest
+
+# With verbose output
+pytest -v --tb=short
 ```
 
-## Key Features Implemented
+### Linting & Type Checking
+```bash
+# Lint
+ruff check stat_lang tests --select E,F,I --ignore E501
 
-### ✅ Completed Features
-- [x] Core DATA step implementation with DATALINES
-- [x] Statistical procedures with CLASS variables and OUTPUT statements
-- [x] Frequency analysis with cross-tabulations and options
-- [x] Data sorting with ascending/descending order
-- [x] Data display and formatting
-- [x] Linear regression analysis with PROC REG
-- [x] Random sampling with PROC SURVEYSELECT
-- [x] Silent execution options
-- [x] Jupyter notebook kernel
-- [x] VS Code extension with syntax highlighting
-- [x] Clean, professional output
-- [x] Concise behavior and syntax
-
-### 🚧 Future Enhancements
-- [ ] Additional statistical procedures (SQL queries, advanced regression, etc.)
-- [ ] Advanced macro functionality
-- [ ] Performance optimizations
-- [ ] Enhanced data connectivity options
+# Type check
+mypy stat_lang tests
+```
 
 ## Contributing
 
@@ -279,7 +323,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 ### Areas for Contribution
 - Additional statistical procedures
 - Macro functionality enhancements
-- Performance optimizations
+- Performance optimisations
 - VS Code extension features
 - Documentation and examples
 
@@ -289,6 +333,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Support
 
-- 📖 [Documentation](https://github.com/ryan-story/StatLang/wiki)
-- 🐛 [Issue Tracker](https://github.com/ryan-story/StatLang/issues)
-- 💬 [Discussions](https://github.com/ryan-story/StatLang/discussions)
+- [Documentation](https://github.com/Stryve-Analytics/StatLang/wiki)
+- [Issue Tracker](https://github.com/Stryve-Analytics/StatLang/issues)
+- [Discussions](https://github.com/Stryve-Analytics/StatLang/discussions)

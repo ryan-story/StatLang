@@ -2,13 +2,14 @@
 Expression Evaluator for StatLang
 
 This module provides functionality to evaluate SAS expressions
-for variable assignments, IF/THEN/ELSE statements, and other
-data step operations.
+for variable assignments, IF/THEN/ELSE statements, array references,
+LAG/DIF functions, and other data step operations.
 """
 
 import re
+from collections import deque
 from collections.abc import Callable
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -18,16 +19,22 @@ from .expression_parser import ExpressionParser
 
 class ExpressionEvaluator:
     """Evaluator for SAS expressions in DATA steps."""
-    
+
     def __init__(self):
         self.expression_parser = ExpressionParser()
-        
+
+        # Array definitions: name -> list of variable names
+        self._arrays: Dict[str, List[str]] = {}
+
+        # LAG queues: (var, k) -> deque of last k values
+        self._lag_queues: Dict[str, deque] = {}
+
         # Define SAS functions
         self.functions: Dict[str, Callable[..., Any]] = {
-            'sum': lambda *args: sum(args),
-            'mean': lambda *args: np.mean(args),
-            'min': lambda *args: min(args),
-            'max': lambda *args: max(args),
+            'sum': lambda *args: sum(a for a in args if a is not None and not (isinstance(a, float) and np.isnan(a))),
+            'mean': lambda *args: np.nanmean([a for a in args if a is not None]),
+            'min': lambda *args: min(a for a in args if a is not None),
+            'max': lambda *args: max(a for a in args if a is not None),
             'abs': abs,
             'sqrt': np.sqrt,
             'round': round,
@@ -36,196 +43,408 @@ class ExpressionEvaluator:
             'substr': self._substr,
             'index': self._index,
             'compress': self._compress,
-            'trim': str.strip,
-            'upcase': str.upper,
-            'lowcase': str.lower,
+            'trim': lambda s: s.strip() if isinstance(s, str) else str(s).strip(),
+            'upcase': lambda s: s.upper() if isinstance(s, str) else str(s).upper(),
+            'lowcase': lambda s: s.lower() if isinstance(s, str) else str(s).lower(),
             'ifc': self._ifc,
             'ifn': self._ifn,
+            'cat': lambda *args: ''.join(str(a) for a in args),
+            'cats': lambda *args: ''.join(str(a).strip() for a in args),
+            'catx': self._catx,
+            'strip': lambda s: s.strip() if isinstance(s, str) else str(s).strip(),
+            'left': lambda s: s.lstrip() if isinstance(s, str) else str(s).lstrip(),
+            'right': lambda s: s.rstrip() if isinstance(s, str) else str(s).rstrip(),
+            'scan': self._scan,
+            'put': lambda val, fmt: str(val),
+            'input': lambda val, fmt: float(val) if val else 0,
+            'log': np.log,
+            'log2': np.log2,
+            'log10': np.log10,
+            'exp': np.exp,
+            'ceil': np.ceil,
+            'floor': np.floor,
+            'mod': lambda a, b: a % b,
+            'missing': lambda x: x is None or (isinstance(x, float) and np.isnan(x)),
+            'nmiss': lambda *args: sum(1 for a in args if a is None or (isinstance(a, float) and np.isnan(a))),
+            'n': lambda *args: sum(1 for a in args if a is not None and not (isinstance(a, float) and np.isnan(a))),
+            'coalesce': lambda *args: next((a for a in args if a is not None and not (isinstance(a, float) and np.isnan(a))), None),
+            'tranwrd': lambda s, f, r: s.replace(f, r) if isinstance(s, str) else str(s).replace(f, r),
+            'reverse': lambda s: s[::-1] if isinstance(s, str) else str(s)[::-1],
+            'propcase': lambda s: s.title() if isinstance(s, str) else str(s).title(),
+            'count': lambda s, sub: s.count(sub) if isinstance(s, str) else 0,
+            'countw': lambda s, *args: len(s.split(args[0] if args else None)) if isinstance(s, str) else 0,
         }
-    
+
+    def register_arrays(self, arrays: List) -> None:
+        """Register array definitions for use in expression evaluation."""
+        for arr in arrays:
+            self._arrays[arr.name.lower()] = arr.variables
+
+    def reset_lag_queues(self) -> None:
+        """Reset LAG/DIF state for a new DATA step."""
+        self._lag_queues.clear()
+
     def evaluate_assignment(self, assignment: str, data: pd.DataFrame) -> pd.DataFrame:
-        """
-        Evaluate a variable assignment statement.
-        
-        Args:
-            assignment: Assignment statement (e.g., "new_var = old_var * 2")
-            data: DataFrame to apply the assignment to
-            
-        Returns:
-            DataFrame with the new variable added
-        """
-        # Parse assignment: variable = expression
+        """Evaluate a variable assignment statement."""
         match = re.match(r'(\w+)\s*=\s*(.+)', assignment.strip())
         if not match:
             return data
-        
+
         var_name = match.group(1)
         expression = match.group(2).strip()
-        
+
         try:
-            # Debug: Evaluating assignment
-            # Make sure we're working with a copy to avoid modifying the original
             if not hasattr(data, '_is_copy'):
                 data = data.copy()
                 data._is_copy = True
-            # Evaluate the expression for each row
             result = self._evaluate_expression(expression, data)
-            # Debug: Result type and length
             data[var_name] = result
             return data
         except Exception as e:
             print(f"Warning: Could not evaluate assignment '{assignment}': {e}")
-            import traceback
-            traceback.print_exc()
             return data
-    
+
     def evaluate_if_then_else(self, if_statement: str, data: pd.DataFrame) -> pd.DataFrame:
+        """Evaluate an IF/THEN/ELSE statement.
+
+        Handles two SAS forms:
+        - Subsetting IF:  ``if condition;``  — keeps only matching rows.
+        - Conditional:    ``if condition then var = value;``
         """
-        Evaluate an IF/THEN/ELSE statement.
-        
-        Args:
-            if_statement: IF/THEN/ELSE statement
-            data: DataFrame to apply the condition to
-            
-        Returns:
-            DataFrame with conditional logic applied
-        """
-        # Parse IF/THEN/ELSE statement
-        # Simple implementation for now
-        if 'if' in if_statement.lower() and 'then' in if_statement.lower():
-            # Extract condition and assignment
+        stmt_lower = if_statement.lower()
+
+        # --- Conditional IF … THEN … ---
+        if 'then' in stmt_lower:
             match = re.match(r'if\s+(.+?)\s+then\s+(.+)', if_statement, re.IGNORECASE)
             if match:
                 condition = match.group(1).strip()
                 assignment = match.group(2).strip()
-                
-                # Parse assignment
+
                 assign_match = re.match(r'(\w+)\s*=\s*(.+)', assignment)
                 if assign_match:
                     var_name = assign_match.group(1)
                     value = assign_match.group(2).strip()
-                    
-                    # Create boolean mask for condition
+
                     mask = self.expression_parser.parse_where_condition(condition, data)
-                    
-                    # Apply conditional assignment
+
                     if var_name not in data.columns:
                         data[var_name] = None
-                    
-                    # Handle different value types
+
                     if value.startswith('"') and value.endswith('"'):
-                        # String value
                         data.loc[mask, var_name] = value[1:-1]
                     elif value.startswith("'") and value.endswith("'"):
-                        # String value
                         data.loc[mask, var_name] = value[1:-1]
                     else:
-                        # Try to evaluate as expression or numeric value
                         try:
                             if value.replace('.', '').replace('-', '').isdigit():
                                 data.loc[mask, var_name] = float(value)
                             else:
-                                # Try to evaluate as expression
                                 result = self._evaluate_expression(value, data)
                                 data.loc[mask, var_name] = result[mask]
                         except Exception:
                             data.loc[mask, var_name] = value
-        
+
+            return data
+
+        # --- Subsetting IF (no THEN) — filter rows ---
+        m = re.match(r'if\s+(.+)', if_statement, re.IGNORECASE)
+        if m:
+            condition = m.group(1).strip().rstrip(';')
+            try:
+                mask = self.expression_parser.parse_where_condition(condition, data)
+                data = data.loc[mask].reset_index(drop=True)
+            except Exception:
+                pass
+
         return data
-    
+
+    def evaluate_row_assignment(
+        self, assignment: str, row: Dict[str, Any],
+        arrays: Optional[Dict[str, List[str]]] = None,
+    ) -> None:
+        """Evaluate assignment for a single row (used in row-by-row processing)."""
+        # Handle array ref on left-hand side: xs(i) = expr
+        arr_match = re.match(r'(\w+)\s*\(\s*(.+?)\s*\)\s*=\s*(.+)', assignment.strip())
+        if arr_match and arrays:
+            arr_name = arr_match.group(1).lower()
+            idx_expr = arr_match.group(2).strip()
+            expression = arr_match.group(3).strip()
+            if arr_name in arrays:
+                try:
+                    idx = int(idx_expr) if idx_expr.isdigit() else int(row.get(idx_expr, 0))
+                except (ValueError, TypeError):
+                    idx = 0
+                arr_vars = arrays[arr_name]
+                if 1 <= idx <= len(arr_vars):
+                    var_name = arr_vars[idx - 1]
+                    value = self._evaluate_scalar_expression(expression, row, arrays)
+                    row[var_name] = value
+                return
+
+        match = re.match(r'(\w+)\s*=\s*(.+)', assignment.strip())
+        if not match:
+            return
+
+        var_name = match.group(1)
+        expression = match.group(2).strip()
+
+        try:
+            value = self._evaluate_scalar_expression(expression, row, arrays)
+            row[var_name] = value
+        except Exception:
+            pass
+
+    def evaluate_row_if(
+        self, if_stmt: str, row: Dict[str, Any],
+        arrays: Optional[Dict[str, List[str]]] = None,
+    ) -> None:
+        """Evaluate IF/THEN for a single row."""
+        match = re.match(r'if\s+(.+?)\s+then\s+(.+)', if_stmt, re.IGNORECASE)
+        if not match:
+            return
+        condition = match.group(1).strip()
+        action = match.group(2).strip()
+
+        if self._evaluate_scalar_condition(condition, row):
+            assign_match = re.match(r'(\w+)\s*=\s*(.+)', action)
+            if assign_match:
+                var_name = assign_match.group(1)
+                expr = assign_match.group(2).strip()
+                row[var_name] = self._evaluate_scalar_expression(expr, row, arrays)
+
+    def lag(self, var: str, k: int = 1, current_value: Any = None) -> Any:
+        """Return the k-th lagged value and push current_value into the queue."""
+        key = f'{var}_{k}'
+        if key not in self._lag_queues:
+            self._lag_queues[key] = deque(maxlen=k)
+
+        q = self._lag_queues[key]
+        result = q[0] if len(q) == k else None
+        if current_value is not None:
+            q.append(current_value)
+        return result
+
+    def dif(self, var: str, k: int = 1, current_value: Any = None) -> Any:
+        """Return current - LAG(k)."""
+        lagged = self.lag(var, k, current_value)
+        if lagged is not None and current_value is not None:
+            try:
+                return current_value - lagged
+            except (TypeError, ValueError):
+                return None
+        return None
+
+    # ------------------------------------------------------------------
+    # Scalar expression evaluation (for row-by-row processing)
+    # ------------------------------------------------------------------
+    def _evaluate_scalar_expression(
+        self, expression: str, row: Dict[str, Any],
+        arrays: Optional[Dict[str, List[str]]] = None,
+    ) -> Any:
+        """Evaluate expression against a single row dict."""
+        expression = expression.rstrip(';').strip()
+
+        # Resolve array references: arrayname(index)
+        if arrays:
+            expression = self._resolve_array_refs(expression, row, arrays)
+
+        # LAG / DIF
+        lag_m = re.match(r'lag(\d*)\s*\(\s*(\w+)\s*\)', expression, re.IGNORECASE)
+        if lag_m:
+            k = int(lag_m.group(1)) if lag_m.group(1) else 1
+            var = lag_m.group(2)
+            return self.lag(var, k, row.get(var))
+
+        dif_m = re.match(r'dif(\d*)\s*\(\s*(\w+)\s*\)', expression, re.IGNORECASE)
+        if dif_m:
+            k = int(dif_m.group(1)) if dif_m.group(1) else 1
+            var = dif_m.group(2)
+            return self.dif(var, k, row.get(var))
+
+        # String literal
+        if (expression.startswith('"') and expression.endswith('"')) or \
+           (expression.startswith("'") and expression.endswith("'")):
+            return expression[1:-1]
+
+        # Numeric literal
+        try:
+            if '.' in expression:
+                return float(expression)
+            return int(expression)
+        except ValueError:
+            pass
+
+        # Variable reference
+        if expression in row:
+            return row[expression]
+
+        # Function call
+        func_m = re.match(r'(\w+)\s*\((.+)\)', expression, re.IGNORECASE)
+        if func_m:
+            fname = func_m.group(1).lower()
+            if fname in self.functions:
+                args_str = func_m.group(2)
+                args = [self._evaluate_scalar_expression(a.strip(), row, arrays)
+                        for a in self._split_func_args(args_str)]
+                return self.functions[fname](*args)
+
+        # Arithmetic
+        if any(op in expression for op in ['+', '-', '*', '/', '**']):
+            return self._evaluate_scalar_arithmetic(expression, row)
+
+        return expression
+
+    def _evaluate_scalar_arithmetic(self, expression: str, row: Dict[str, Any]) -> Any:
+        """Evaluate arithmetic expression against a single row."""
+        result = expression
+        sorted_keys = sorted(row.keys(), key=len, reverse=True)
+        for key in sorted_keys:
+            if key in result:
+                val = row[key]
+                if val is None:
+                    val = 0
+                pattern = r'\b' + re.escape(key) + r'\b'
+                result = re.sub(pattern, str(val), result)
+        try:
+            return eval(result)  # noqa: S307
+        except Exception:
+            return 0
+
+    def _evaluate_scalar_condition(self, condition: str, row: Dict[str, Any]) -> bool:
+        """Evaluate a condition against a single row."""
+        condition = condition.strip()
+
+        # Handle AND / OR
+        if ' and ' in condition.lower():
+            parts = re.split(r'\s+and\s+', condition, flags=re.IGNORECASE)
+            return all(self._evaluate_scalar_condition(p.strip(), row) for p in parts)
+        if ' or ' in condition.lower():
+            parts = re.split(r'\s+or\s+', condition, flags=re.IGNORECASE)
+            return any(self._evaluate_scalar_condition(p.strip(), row) for p in parts)
+
+        # Simple comparison
+        m = re.match(r'(\w+)\s*(>=|<=|!=|~=|\^=|==|=|>|<|ge|le|ne|gt|lt|eq)\s*(.+)', condition, re.IGNORECASE)
+        if m:
+            var = m.group(1)
+            op = m.group(2).lower()
+            val_str = m.group(3).strip().strip("'\"")
+            left = row.get(var, 0)
+
+            # Coerce
+            try:
+                right: Any = float(val_str) if val_str.replace('.', '').replace('-', '').isdigit() else val_str
+            except ValueError:
+                right = val_str
+
+            op_map = {'=': '==', 'eq': '==', 'ne': '!=', '^=': '!=', '~=': '!=',
+                       'gt': '>', 'lt': '<', 'ge': '>=', 'le': '<=',
+                       '>=': '>=', '<=': '<=', '>': '>', '<': '<', '==': '==', '!=': '!='}
+            pyop = op_map.get(op, '==')
+            try:
+                return bool(eval(f'left {pyop} right', {'left': left, 'right': right}))  # noqa: S307
+            except Exception:
+                return False
+
+        return True
+
+    @staticmethod
+    def _resolve_array_refs(
+        expression: str, row: Dict[str, Any],
+        arrays: Dict[str, List[str]],
+    ) -> str:
+        """Resolve array(index) references to actual variable names."""
+        for arr_name, arr_vars in arrays.items():
+            pattern = re.compile(rf'\b{re.escape(arr_name)}\s*\(\s*(.+?)\s*\)', re.IGNORECASE)
+            for m in pattern.finditer(expression):
+                idx_expr = m.group(1).strip()
+                try:
+                    idx = int(idx_expr) if idx_expr.isdigit() else int(row.get(idx_expr, 0))
+                except (ValueError, TypeError):
+                    idx = 0
+                if 1 <= idx <= len(arr_vars):
+                    var_name = arr_vars[idx - 1]
+                    expression = expression[:m.start()] + var_name + expression[m.end():]
+        return expression
+
+    @staticmethod
+    def _split_func_args(args_str: str) -> List[str]:
+        """Split function arguments respecting nested parentheses."""
+        args: List[str] = []
+        depth = 0
+        current = ''
+        for ch in args_str:
+            if ch == '(':
+                depth += 1
+                current += ch
+            elif ch == ')':
+                depth -= 1
+                current += ch
+            elif ch == ',' and depth == 0:
+                args.append(current)
+                current = ''
+            else:
+                current += ch
+        if current.strip():
+            args.append(current)
+        return args
+
+    # ------------------------------------------------------------------
+    # Vectorised expression evaluation (original interface, kept for compat)
+    # ------------------------------------------------------------------
     def _evaluate_expression(self, expression: str, data: pd.DataFrame) -> pd.Series:
-        """
-        Evaluate an expression for each row in the DataFrame.
-        
-        Args:
-            expression: Expression to evaluate
-            data: DataFrame to evaluate against
-            
-        Returns:
-            Series with evaluated results
-        """
-        # Debug: Evaluating expression
-        
-        # Handle IFN functions first (they can contain complex expressions)
+        """Evaluate an expression for each row in the DataFrame."""
         if 'ifn(' in expression.lower():
             return self._evaluate_ifn_expression(expression, data)
-        
-        # Handle simple cases first
+
         if expression.strip() in data.columns:
             return data[expression.strip()]
-        
-        # Handle numeric literals
+
         if expression.replace('.', '').replace('-', '').isdigit():
             return pd.Series([float(expression)] * len(data), index=data.index)
-        
-        # Handle string literals
+
         if (expression.startswith('"') and expression.endswith('"')) or \
            (expression.startswith("'") and expression.endswith("'")):
             return pd.Series([expression[1:-1]] * len(data), index=data.index)
-        
-        # Handle arithmetic expressions
+
         if any(op in expression for op in ['+', '-', '*', '/', '**']):
             return self._evaluate_arithmetic(expression, data)
-        
-        # Handle function calls
+
         if '(' in expression and ')' in expression:
             return self._evaluate_function(expression, data)
-        
-        # Default: return as string
+
         return pd.Series([expression] * len(data), index=data.index)
-    
+
     def _evaluate_arithmetic(self, expression: str, data: pd.DataFrame) -> pd.Series:
         """Evaluate arithmetic expressions."""
         try:
-            # Remove semicolon if present
             expression = expression.rstrip(';')
-            # Debug: Evaluating arithmetic
-            
-            # Replace column names with their values
             result = expression
-            # Sort columns by length (longest first) to avoid partial replacements
             sorted_cols = sorted(data.columns, key=len, reverse=True)
             for col in sorted_cols:
                 if col in expression:
-                    # Use word boundaries to avoid partial replacements
-                    import re
                     pattern = r'\b' + re.escape(col) + r'\b'
                     result = re.sub(pattern, f"data['{col}']", result)
-            
-            # Debug: Arithmetic expression after column replacement
-            
-            # Evaluate the expression
-            evaluated_result = eval(result)
-            # Debug: Arithmetic result
-            return evaluated_result
-        except Exception as e:
-            print(f"Error evaluating arithmetic expression '{expression}': {e}")
-            import traceback
-            traceback.print_exc()
-            # Fallback: return zeros
+            return eval(result)  # noqa: S307
+        except Exception:
             return pd.Series([0] * len(data), index=data.index)
-    
+
     def _evaluate_function(self, expression: str, data: pd.DataFrame) -> pd.Series:
         """Evaluate function calls."""
-        # Parse function call: function_name(arg1, arg2, ...)
         match = re.match(r'(\w+)\s*\(([^)]+)\)', expression)
         if not match:
             return pd.Series([0] * len(data), index=data.index)
-        
+
         func_name = match.group(1).lower()
         args_str = match.group(2)
-        
+
         if func_name not in self.functions:
             return pd.Series([0] * len(data), index=data.index)
-        
-        # Parse arguments
+
         args = [arg.strip() for arg in args_str.split(',')]
-        
+
         try:
             func: Callable[..., Any] = self.functions[func_name]
-            
-            # Evaluate arguments
-            evaluated_args = []
+            evaluated_args: List[Any] = []
             for arg in args:
                 if arg in data.columns:
                     evaluated_args.append(data[arg])
@@ -236,184 +455,129 @@ class ExpressionEvaluator:
                     evaluated_args.append(arg[1:-1])
                 else:
                     evaluated_args.append(arg)
-            
-            # Apply function
+
             if len(evaluated_args) == 1 and isinstance(evaluated_args[0], pd.Series):
                 return evaluated_args[0].apply(lambda x: func(x))
             else:
                 return pd.Series([func(*evaluated_args)] * len(data), index=data.index)
-                
+
         except Exception:
             return pd.Series([0] * len(data), index=data.index)
-    
-    def _substr(self, string: str, start: int, length: Optional[int] = None) -> str:
-        """SAS SUBSTR function."""
+
+    # ------------------------------------------------------------------
+    # SAS built-in functions
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _substr(string: str, start: int, length: Optional[int] = None) -> str:
         if length is None:
-            return string[start-1:]
-        return string[start-1:start-1+length]
-    
-    def _index(self, string: str, substring: str) -> int:
-        """SAS INDEX function."""
+            return string[int(start) - 1:]
+        return string[int(start) - 1:int(start) - 1 + int(length)]
+
+    @staticmethod
+    def _index(string: str, substring: str) -> int:
         return string.find(substring) + 1 if substring in string else 0
-    
-    def _compress(self, string: str, chars: Optional[str] = None) -> str:
-        """SAS COMPRESS function."""
+
+    @staticmethod
+    def _compress(string: str, chars: Optional[str] = None) -> str:
         if chars is None:
             return string.replace(' ', '')
         return ''.join(c for c in string if c not in chars)
-    
-    def _ifc(self, condition: bool, true_value: str, false_value: str) -> str:
-        """SAS IFC function."""
+
+    @staticmethod
+    def _ifc(condition: bool, true_value: str, false_value: str) -> str:
         return true_value if condition else false_value
-    
-    def _ifn(self, condition, true_value, false_value):
-        """SAS IFN function - handles nested IFN calls."""
-        # Handle nested IFN calls in false_value
-        if isinstance(false_value, str) and 'ifn(' in false_value.lower():
-            # Parse nested IFN: ifn(condition2, value2, value3)
-            import re
-            match = re.match(r'ifn\s*\(\s*([^,]+),\s*([^,]+),\s*([^)]+)\)', false_value, re.IGNORECASE)
-            if match:
-                cond2, val2, val3 = match.groups()
-                # Evaluate the nested condition
-                if isinstance(condition, pd.Series):
-                    # For vectorized operations
-                    result = pd.Series(index=condition.index, dtype=object)
-                    result[condition] = true_value
-                    # Evaluate nested condition for false cases
-                    nested_condition = self._evaluate_condition(cond2.strip(), condition.index)
-                    result[~condition & nested_condition] = val2.strip().strip('"\'')
-                    result[~condition & ~nested_condition] = val3.strip().strip('"\'')
-                    return result
-                else:
-                    # For scalar operations
-                    if condition:
-                        return true_value
-                    else:
-                        # Evaluate nested condition
-                        nested_cond = self._evaluate_condition(cond2.strip(), None)
-                        return val2.strip().strip('"\'') if nested_cond else val3.strip().strip('"\'')
-        
-        # Simple IFN case
+
+    @staticmethod
+    def _ifn(condition, true_value, false_value):
         if isinstance(condition, pd.Series):
             result = pd.Series(index=condition.index, dtype=object)
             result[condition] = true_value
             result[~condition] = false_value
             return result
-        else:
-            return true_value if condition else false_value
-    
-    def _evaluate_condition(self, condition: str, index=None):
-        """Evaluate a condition string."""
-        # Handle simple comparisons
-        if '>' in condition:
-            parts = condition.split('>')
-            if len(parts) == 2:
-                _var, _val = parts[0].strip(), parts[1].strip()
-                if index is not None:
-                    # Vectorized comparison
-                    return pd.Series([True] * len(index), index=index)  # Placeholder
-                else:
-                    return True  # Placeholder
-        return True
-    
+        return true_value if condition else false_value
+
+    @staticmethod
+    def _catx(sep: str, *args: Any) -> str:
+        return sep.join(str(a).strip() for a in args if a is not None and str(a).strip())
+
+    @staticmethod
+    def _scan(string: str, n: int, delim: Optional[str] = None) -> str:
+        parts = string.split(delim) if delim else string.split()
+        idx = int(n)
+        if idx > 0 and idx <= len(parts):
+            return parts[idx - 1]
+        if idx < 0 and abs(idx) <= len(parts):
+            return parts[idx]
+        return ''
+
+    # ------------------------------------------------------------------
+    # IFN vectorized evaluation
+    # ------------------------------------------------------------------
     def _evaluate_ifn_expression(self, expression: str, data: pd.DataFrame) -> pd.Series:
-        """Evaluate IFN expressions with proper vectorization."""
         try:
-            print(f"Evaluating IFN expression: {expression}")
-            
-            # Parse IFN expression: ifn(condition, true_value, false_value)
-            import re
-            # Try to match complete IFN first
             match = re.match(r'ifn\s*\(\s*([^,]+),\s*([^,]+),\s*([^)]+)\)', expression, re.IGNORECASE)
             if not match:
-                # Try to match incomplete IFN (missing closing parenthesis)
                 match = re.match(r'ifn\s*\(\s*([^,]+),\s*([^,]+),\s*(.+)$', expression, re.IGNORECASE)
-                if match:
-                    print(f"IFN pattern matched (incomplete): {expression}")
-                else:
-                    print(f"IFN pattern not matched for: {expression}")
+                if not match:
                     return pd.Series([expression] * len(data), index=data.index)
-            
+
             condition_str, true_value, false_value = match.groups()
             condition_str = condition_str.strip()
             true_value = true_value.strip().strip('"\'')
             false_value = false_value.strip()
-            
-            print(f"IFN parsed - condition: {condition_str}, true: {true_value}, false: {false_value}")
-            
-            # Evaluate the condition for each row
+
             condition_result = self._evaluate_condition_vectorized(condition_str, data)
-            print(f"Condition result: {condition_result}")
-            
-            # Handle nested IFN in false_value
+
             if 'ifn(' in false_value.lower():
-                print("Handling nested IFN")
-                # Parse nested IFN - try different patterns
                 nested_match = re.match(r'ifn\s*\(\s*([^,]+),\s*([^,]+),\s*([^)]+)\)', false_value, re.IGNORECASE)
                 if not nested_match:
-                    # Try without closing parenthesis
                     nested_match = re.match(r'ifn\s*\(\s*([^,]+),\s*([^,]+),\s*(.+)$', false_value, re.IGNORECASE)
-                
+
                 if nested_match:
                     cond2, val2, val3 = nested_match.groups()
-                    cond2 = cond2.strip()
                     val2 = val2.strip().strip('"\'')
                     val3 = val3.strip().strip('"\'')
-                    
-                    print(f"Nested IFN - cond2: {cond2}, val2: {val2}, val3: {val3}")
-                    
-                    # Create result series
+
                     result = pd.Series(index=data.index, dtype=object)
-                    
-                    # True cases get true_value
                     result[condition_result] = true_value
-                    
-                    # False cases get evaluated with nested condition
                     false_mask = ~condition_result
                     if false_mask.any():
-                        nested_condition = self._evaluate_condition_vectorized(cond2, data)
+                        nested_condition = self._evaluate_condition_vectorized(cond2.strip(), data)
                         result[false_mask & nested_condition] = val2
                         result[false_mask & ~nested_condition] = val3
-                    
-                    print(f"Final IFN result: {result}")
                     return result
-                else:
-                    print(f"Could not parse nested IFN: {false_value}")
-                    # Fall back to simple IFN
-                    result = pd.Series(index=data.index, dtype=object)
-                    result[condition_result] = true_value
-                    result[~condition_result] = false_value
-                    return result
-            
-            # Simple IFN case
+
             result = pd.Series(index=data.index, dtype=object)
             result[condition_result] = true_value
             result[~condition_result] = false_value.strip().strip('"\'')
-            
-            print(f"Simple IFN result: {result}")
             return result
-            
-        except Exception as e:
-            print(f"Error evaluating IFN expression '{expression}': {e}")
-            import traceback
-            traceback.print_exc()
+
+        except Exception:
             return pd.Series([expression] * len(data), index=data.index)
-    
+
     def _evaluate_condition_vectorized(self, condition: str, data: pd.DataFrame) -> pd.Series:
-        """Evaluate a condition for each row in the DataFrame."""
         try:
-            # Handle simple comparisons
             if '>' in condition:
                 parts = condition.split('>')
                 if len(parts) == 2:
                     var, val = parts[0].strip(), parts[1].strip()
                     if var in data.columns:
                         return data[var] > float(val)
-            
-            # Default: return all True
+            if '<' in condition:
+                parts = condition.split('<')
+                if len(parts) == 2:
+                    var, val = parts[0].strip(), parts[1].strip()
+                    if var in data.columns:
+                        return data[var] < float(val)
+            if '=' in condition:
+                parts = condition.split('=')
+                if len(parts) == 2:
+                    var, val = parts[0].strip(), parts[1].strip()
+                    if var in data.columns:
+                        try:
+                            return data[var] == float(val)
+                        except ValueError:
+                            return data[var] == val
             return pd.Series([True] * len(data), index=data.index)
-            
-        except Exception as e:
-            print(f"Error evaluating condition '{condition}': {e}")
+        except Exception:
             return pd.Series([True] * len(data), index=data.index)
