@@ -9,6 +9,16 @@
         ],
         "description": "DATA step"
     },
+    "DATA Step with MERGE": {
+        "prefix": "datamerge",
+        "body": [
+            "data ${1:output};",
+            "    merge ${2:dataset1} ${3:dataset2};",
+            "    by ${4:key_variable};",
+            "run;"
+        ],
+        "description": "DATA step with MERGE by key"
+    },
     "PROC MEANS": {
         "prefix": "procmeans",
         "body": [
@@ -49,14 +59,335 @@
         ],
         "description": "PROC SORT to sort data"
     },
-    "PROC CONTENTS": {
-        "prefix": "proccontents",
+    "PROC REG": {
+        "prefix": "procreg",
         "body": [
-            "proc contents data=${1:dataset};",
-            "    ${2:/* options */}",
+            "proc reg data=${1:dataset};",
+            "    model ${2:dependent} = ${3:independent};",
+            "    output out=${4:output_dataset} p=predicted r=residuals;",
             "run;"
         ],
-        "description": "PROC CONTENTS to show dataset information"
+        "description": "PROC REG for linear regression"
+    },
+    "PROC GLM": {
+        "prefix": "procglm",
+        "body": [
+            "proc glm data=${1:dataset};",
+            "    class ${2:class_variables};",
+            "    model ${3:dependent} = ${4:effects};",
+            "run;"
+        ],
+        "description": "PROC GLM for General Linear Models (Type III ANOVA)"
+    },
+    "PROC ANOVA": {
+        "prefix": "procanova",
+        "body": [
+            "proc anova data=${1:dataset};",
+            "    class ${2:group_variable};",
+            "    model ${3:dependent} = ${4:group_variable};",
+            "run;"
+        ],
+        "description": "PROC ANOVA for balanced analysis of variance"
+    },
+    "PROC GENMOD": {
+        "prefix": "procgenmod",
+        "body": [
+            "proc genmod data=${1:dataset};",
+            "    model ${2:dependent} = ${3:independent} / dist=${4|gaussian,binomial,poisson,gamma|};",
+            "run;"
+        ],
+        "description": "PROC GENMOD for Generalised Linear Models"
+    },
+    "PROC MIXED": {
+        "prefix": "procmixed",
+        "body": [
+            "proc mixed data=${1:dataset};",
+            "    class ${2:class_variables};",
+            "    model ${3:dependent} = ${4:fixed_effects};",
+            "    random intercept / subject=${5:subject_variable};",
+            "run;"
+        ],
+        "description": "PROC MIXED for mixed/multilevel models"
+    },
+    "PROC LOGIT": {
+        "prefix": "proclogit",
+        "body": [
+            "proc logit data=${1:dataset};",
+            "    model ${2:dependent} = ${3:independent};",
+            "run;"
+        ],
+        "description": "PROC LOGIT for logistic regression"
+    },
+    "PROC TTEST": {
+        "prefix": "procttest",
+        "body": [
+            "proc ttest data=${1:dataset};",
+            "    class ${2:group_variable};",
+            "    var ${3:test_variable};",
+            "run;"
+        ],
+        "description": "PROC TTEST for t-tests (independent and paired)"
+    },
+    "PROC NPAR1WAY": {
+        "prefix": "procnpar1way",
+        "body": [
+            "proc npar1way data=${1:dataset};",
+            "    class ${2:group_variable};",
+            "    var ${3:test_variable};",
+            "run;"
+        ],
+        "description": "PROC NPAR1WAY for nonparametric tests"
+    },
+    "PROC UNIVARIATE": {
+        "prefix": "procunivariate",
+        "body": [
+            "proc univariate data=${1:dataset};",
+            "    var ${2:variables};",
+            "    ${3:/* options */}",
+            "run;"
+        ],
+        "description": "PROC UNIVARIATE for detailed univariate analysis"
+    },
+    "PROC CORR": {
+        "prefix": "proccorr",
+        "body": [
+            "proc corr data=${1:dataset};",
+            "    var ${2:variables};",
+            "    ${3:/* options */}",
+            "run;"
+        ],
+        "description": "PROC CORR for correlation analysis"
+    },
+    "PROC FACTOR": {
+        "prefix": "procfactor",
+        "body": [
+            "proc factor data=${1:dataset};",
+            "    var ${2:variables};",
+            "    nfactors=${3:3};",
+            "run;"
+        ],
+        "description": "PROC FACTOR for factor analysis"
+    },
+    "PROC CLUSTER": {
+        "prefix": "proccluster",
+        "body": [
+            "proc cluster data=${1:dataset} method=${2|kmeans,hierarchical|} k=${3:3};",
+            "    var ${4:variables};",
+            "run;"
+        ],
+        "description": "PROC CLUSTER for clustering (k-means, hierarchical)"
+    },
+    "PROC PRINCOMP": {
+        "prefix": "procprincomp",
+        "body": [
+            "proc princomp data=${1:dataset} out=${2:output_dataset};",
+            "    var ${3:variables};",
+            "run;"
+        ],
+        "description": "PROC PRINCOMP for Principal Component Analysis"
+    },
+    "PROC DISCRIM": {
+        "prefix": "procdiscrim",
+        "body": [
+            "proc discrim data=${1:dataset};",
+            "    class ${2:group_variable};",
+            "    var ${3:variables};",
+            "run;"
+        ],
+        "description": "PROC DISCRIM for discriminant analysis (LDA/QDA)"
+    },
+    "PROC ROBUSTREG": {
+        "prefix": "procrobustreg",
+        "body": [
+            "proc robustreg data=${1:dataset};",
+            "    model ${2:dependent} = ${3:independent};",
+            "run;"
+        ],
+        "description": "PROC ROBUSTREG for robust regression (M-estimation)"
+    },
+    "PROC LIFEREG": {
+        "prefix": "proclifereg",
+        "body": [
+            "proc lifereg data=${1:dataset};",
+            "    model ${2:time_variable} = ${3:covariates} / dist=${4|weibull,lnormal,llogistic|};",
+            "run;"
+        ],
+        "description": "PROC LIFEREG for parametric survival analysis"
+    },
+    "PROC PHREG": {
+        "prefix": "procphreg",
+        "body": [
+            "proc phreg data=${1:dataset};",
+            "    model ${2:time_variable} * ${3:censor_variable}(0) = ${4:covariates};",
+            "run;"
+        ],
+        "description": "PROC PHREG for Cox proportional hazards regression"
+    },
+    "PROC TIMESERIES": {
+        "prefix": "proctimeseries",
+        "body": [
+            "proc timeseries data=${1:dataset};",
+            "    var ${2:value_variable};",
+            "    id ${3:date_variable};",
+            "run;"
+        ],
+        "description": "PROC TIMESERIES for time series analysis"
+    },
+    "PROC TREE": {
+        "prefix": "proctree",
+        "body": [
+            "proc tree data=${1:dataset};",
+            "    model ${2:target} = ${3:predictors};",
+            "run;"
+        ],
+        "description": "PROC TREE for decision tree classification/regression"
+    },
+    "PROC FOREST": {
+        "prefix": "procforest",
+        "body": [
+            "proc forest data=${1:dataset};",
+            "    model ${2:target} = ${3:predictors};",
+            "    ${4:/* ntrees=100 */}",
+            "run;"
+        ],
+        "description": "PROC FOREST for random forest ensemble learning"
+    },
+    "PROC BOOST": {
+        "prefix": "procboost",
+        "body": [
+            "proc boost data=${1:dataset};",
+            "    model ${2:target} = ${3:predictors};",
+            "    ${4:/* ntrees=100 lr=0.1 */}",
+            "run;"
+        ],
+        "description": "PROC BOOST for gradient boosting"
+    },
+    "PROC DNN": {
+        "prefix": "procdnn",
+        "body": [
+            "proc dnn data=${1:dataset};",
+            "    input ${2:feature_variables};",
+            "    target ${3:target_variable};",
+            "    architecture ${4:64 32};",
+            "    model epochs=${5:50} lr=${6:0.01} optimizer=${7|adam,sgd,rmsprop|};",
+            "run;"
+        ],
+        "description": "PROC DNN for PyTorch deep neural network training"
+    },
+    "PROC NLP": {
+        "prefix": "procnlp",
+        "body": [
+            "proc nlp data=${1:dataset} mode=${2|sentiment,classify,ner,summarize|};",
+            "    text ${3:text_column};",
+            "run;"
+        ],
+        "description": "PROC NLP for HuggingFace NLP (sentiment, classification, NER, summarisation)"
+    },
+    "PROC CVISION": {
+        "prefix": "proccvision",
+        "body": [
+            "proc cvision data=${1:dataset} mode=${2|classify,train_detect,serve,generate_samples|};",
+            "    image ${3:image_column};",
+            "run;"
+        ],
+        "description": "PROC CVISION for image classification and object detection"
+    },
+    "PROC RL": {
+        "prefix": "procrl",
+        "body": [
+            "proc rl data=${1:transitions};",
+            "    state ${2:state_variable};",
+            "    actions ${3:action_variable};",
+            "    reward ${4:reward_variable};",
+            "    model episodes=${5:1000} gamma=${6:0.99} lr=${7:0.1};",
+            "run;"
+        ],
+        "description": "PROC RL for tabular Q-learning reinforcement learning"
+    },
+    "PROC LLM": {
+        "prefix": "procllm",
+        "body": [
+            "proc llm mode=${1|generate,fillmask,qa|};",
+            "    prompt \"${2:your prompt here}\";",
+            "run;"
+        ],
+        "description": "PROC LLM for text generation, fill-mask, and QA via HuggingFace"
+    },
+    "PROC LANGUAGE": {
+        "prefix": "proclanguage",
+        "body": [
+            "proc language prompt=\"${1:your prompt here}\";",
+            "run;"
+        ],
+        "description": "PROC LANGUAGE for LLM-powered data analysis"
+    },
+    "PROC SQL": {
+        "prefix": "procsql",
+        "body": [
+            "proc sql;",
+            "    select ${1:columns}",
+            "    from ${2:table};",
+            "quit;"
+        ],
+        "description": "PROC SQL for DuckDB-powered SQL queries"
+    },
+    "PROC TRANSPOSE": {
+        "prefix": "proctranspose",
+        "body": [
+            "proc transpose data=${1:dataset} out=${2:output_dataset};",
+            "    var ${3:variables};",
+            "    ${4:/* by group; */}",
+            "run;"
+        ],
+        "description": "PROC TRANSPOSE for reshaping data (wide/long)"
+    },
+    "PROC APPEND": {
+        "prefix": "procappend",
+        "body": [
+            "proc append base=${1:base_dataset} data=${2:new_dataset};",
+            "run;"
+        ],
+        "description": "PROC APPEND for concatenating datasets"
+    },
+    "PROC DATASETS": {
+        "prefix": "procdatasets",
+        "body": [
+            "proc datasets;",
+            "    ${1|delete,rename,list|} ${2:dataset_name};",
+            "run;"
+        ],
+        "description": "PROC DATASETS for managing datasets (delete, rename, list)"
+    },
+    "PROC EXPORT": {
+        "prefix": "procexport",
+        "body": [
+            "proc export data=${1:dataset}",
+            "    outfile=\"${2:filepath}\"",
+            "    dbms=${3|csv,xlsx,json,parquet|};",
+            "run;"
+        ],
+        "description": "PROC EXPORT to CSV, Excel, JSON, Parquet"
+    },
+    "PROC IMPORT": {
+        "prefix": "procimport",
+        "body": [
+            "proc import datafile=\"${1:filepath}\"",
+            "    out=${2:dataset}",
+            "    dbms=${3|csv,xlsx,json,parquet|};",
+            "run;"
+        ],
+        "description": "PROC IMPORT from CSV, Excel, JSON, Parquet"
+    },
+    "PROC SURVEYSELECT": {
+        "prefix": "procsurvey",
+        "body": [
+            "proc surveyselect data=${1:dataset}",
+            "    method=srs",
+            "    samprate=${2:0.1}",
+            "    out=${3:output_dataset};",
+            "run;"
+        ],
+        "description": "PROC SURVEYSELECT for random sampling"
     },
     "Macro Variable": {
         "prefix": "let",
@@ -92,65 +423,6 @@
             "end;"
         ],
         "description": "DO loop"
-    },
-    "PROC REG": {
-        "prefix": "procreg",
-        "body": [
-            "proc reg data=${1:dataset};",
-            "    model ${2:dependent} = ${3:independent};",
-            "    ${4:/* output statements */}",
-            "run;"
-        ],
-        "description": "PROC REG for linear regression"
-    },
-    "PROC SQL": {
-        "prefix": "procsql",
-        "body": [
-            "proc sql;",
-            "    select ${1:columns}",
-            "    from ${2:table};",
-            "quit;"
-        ],
-        "description": "PROC SQL for SQL queries"
-    },
-    "PROC SURVEYSELECT": {
-        "prefix": "procsurvey",
-        "body": [
-            "proc surveyselect data=${1:dataset}",
-            "    method=srs",
-            "    samprate=${2:0.1}",
-            "    out=${3:output_dataset};",
-            "run;"
-        ],
-        "description": "PROC SURVEYSELECT for random sampling"
-    },
-    "PROC UNIVARIATE": {
-        "prefix": "procunivariate",
-        "body": [
-            "proc univariate data=${1:dataset};",
-            "    var ${2:variables};",
-            "    ${3:/* options */}",
-            "run;"
-        ],
-        "description": "PROC UNIVARIATE for detailed univariate analysis"
-    },
-    "PROC CORR": {
-        "prefix": "proccorr",
-        "body": [
-            "proc corr data=${1:dataset};",
-            "    var ${2:variables};",
-            "    ${3:/* options */}",
-            "run;"
-        ],
-        "description": "PROC CORR for correlation analysis"
-    },
-    "PROC LANGUAGE": {
-        "prefix": "proclanguage",
-        "body": [
-            "proc language prompt=\"${1:your prompt here}\";",
-            "run;"
-        ],
-        "description": "PROC LANGUAGE for LLM integration"
     },
     "TITLE Statement": {
         "prefix": "title",

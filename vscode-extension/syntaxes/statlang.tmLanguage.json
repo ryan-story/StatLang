@@ -66,7 +66,7 @@
       "patterns": [
         {
           "name": "keyword.control.statlang",
-          "match": "\\b(?:data|set|merge|update|modify|by|where|if|then|else|do|end|run|stop|abort|return|link|goto|label|format|informat|length|retain|drop|keep|rename|array|dim|hbound|lbound|call|put|input|file|infile|cards|datalines|datalines4|cards4|var|class|tables|model|output)\\b"
+          "match": "\\b(?:data|set|merge|update|modify|by|where|if|then|else|do|end|run|stop|abort|return|link|goto|label|format|informat|length|retain|drop|keep|rename|array|dim|hbound|lbound|call|put|input|file|infile|cards|datalines|datalines4|cards4|var|class|tables|model|output|target|architecture|text|image|state|actions|reward|score|out|first|last|until|while|to|over)\\b"
         },
         {
           "name": "keyword.other.statlang",
@@ -78,7 +78,7 @@
       "patterns": [
         {
           "name": "entity.name.function.proc.statlang",
-          "match": "\\bproc\\s+(?:sql|means|freq|sort|print|contents|datasets|import|export|univariate|corr|reg|glm|anova|mixed|logistic|phreg|lifetest|surveymeans|surveyfreq|surveyselect|surveyreg|surveyphreg|surveyimpute|surveyimputation|surveyselect|surveyfreq|surveymeans|surveyreg|surveyphreg|surveyimpute|surveyimputation)\\b"
+          "match": "\\bproc\\s+(?:sql|means|freq|sort|print|contents|datasets|import|export|univariate|corr|reg|glm|anova|mixed|logistic|logit|phreg|lifereg|lifetest|genmod|robustreg|discrim|princomp|ttest|npar1way|factor|cluster|timeseries|tree|forest|boost|dnn|nlp|cvision|rl|llm|language|transpose|append|surveyselect|surveymeans|surveyfreq|surveyreg|surveyphreg)\\b"
         }
       ]
     },

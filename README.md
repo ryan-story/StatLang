@@ -117,7 +117,23 @@ StatLang provides an open-source environment for statistical analysis by offerin
 
 ### Python Package
 ```bash
+# Core statistical procedures
 pip install statlang
+
+# With deep learning (PROC DNN, PROC CVISION, PROC RL)
+pip install statlang[dl]
+
+# With NLP (PROC NLP, PROC LLM)
+pip install statlang[nlp]
+
+# With DuckDB SQL engine (PROC SQL)
+pip install statlang[sql]
+
+# With Jupyter notebook support
+pip install statlang[notebook]
+
+# Everything
+pip install statlang[all]
 ```
 
 ### Jupyter Kernel Installation

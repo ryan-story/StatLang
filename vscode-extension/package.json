@@ -9,13 +9,13 @@
     "email": "ryan@stryve.com",
     "url": "https://github.com/ryan-story"
   },
-  "homepage": "https://github.com/ryan-story/StatLang",
+  "homepage": "https://github.com/Stryve-Analytics/StatLang",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ryan-story/StatLang.git"
+    "url": "https://github.com/Stryve-Analytics/StatLang.git"
   },
   "bugs": {
-    "url": "https://github.com/ryan-story/StatLang/issues"
+    "url": "https://github.com/Stryve-Analytics/StatLang/issues"
   },
   "license": "MIT",
   "icon": "icon.png",

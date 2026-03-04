@@ -35,20 +35,35 @@ dependencies = [
     "statsmodels>=0.13.0",
     "matplotlib>=3.3.0",
     "requests>=2.25.0",
-    "transformers>=4.20.0",
-    "torch>=1.12.0",
-    "torchvision>=0.13.0",
-    "duckdb>=1.0.0",
-    "jupyter>=1.0.0",
-    "ipykernel>=6.0.0",
-    "lifelines>=0.27.0",
-    "Pillow>=9.0.0",
     "openpyxl>=3.0.0",
     "pyarrow>=10.0.0",
 ]
 
 [project.optional-dependencies]
+dl = [
+    "torch>=1.12.0",
+    "torchvision>=0.13.0",
+    "Pillow>=9.0.0",
+]
+nlp = [
+    "transformers>=4.20.0",
+    "torch>=1.12.0",
+]
+sql = [
+    "duckdb>=1.0.0",
+]
+notebook = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.0.0",
+]
+survival = [
+    "lifelines>=0.27.0",
+]
+all = [
+    "statlang[dl,nlp,sql,notebook,survival]",
+]
 dev = [
+    "statlang[all]",
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
     "mypy>=1.0.0",
