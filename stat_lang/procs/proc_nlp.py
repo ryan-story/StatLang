@@ -53,7 +53,7 @@ class ProcNLP:
             return results
 
         try:
-            _model = model_name if model_name else None
+            _model: Any = model_name if model_name else None
             if mode == 'sentiment':
                 pipe = hf_pipeline('sentiment-analysis', model=_model)
                 preds = pipe(texts, truncation=True, max_length=512)
