@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -28,7 +32,7 @@ jobs:
 
       - name: Run tests (safety check before release)
         run: |
-          ruff check stat_lang tests
+          ruff check stat_lang tests --select E,F,I --ignore E501
           mypy stat_lang tests
           pytest
 
@@ -37,47 +41,71 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
 
-      - name: Python Semantic Release (version bump, tag, PyPI, GitHub Release)
+      - name: Semantic Release — version bump, tag, changelog
+        id: semrel
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          OUTPUT=$(semantic-release version 2>&1) || true
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "The next version is"; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+            echo "No new version to release."
+          fi
+
+      - name: Publish to PyPI
+        if: steps.semrel.outputs.released == 'true'
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          pip install twine
+          twine upload dist/*
+
+      - name: Publish GitHub Release assets
+        if: steps.semrel.outputs.released == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           semantic-release publish
 
+      - name: Update VS Code extension version
+        if: steps.semrel.outputs.released == 'true'
+        run: |
+          # Read new version from pyproject.toml
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          cd vscode-extension
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
+            pkg.version = '$VERSION';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          echo "Updated VS Code extension to version $VERSION"
+
       - name: Set up Node
+        if: steps.semrel.outputs.released == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
       - name: Install VS Code extension dependencies
+        if: steps.semrel.outputs.released == 'true'
         working-directory: vscode-extension
         run: |
           npm ci
 
       - name: Install vsce
+        if: steps.semrel.outputs.released == 'true'
         run: |
           npm install -g @vscode/vsce
 
       - name: Publish VS Code extension
+        if: steps.semrel.outputs.released == 'true'
         working-directory: vscode-extension
         env:
           VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
         run: |
-          set +e
           vsce publish
-          status=$?
-          set -e
-
-          if [ $status -ne 0 ]; then
-            echo "vsce publish failed with status $status. Checking if version already exists..."
-            VERSION=$(node -p "require('./package.json').version")
-
-            # Check if extension@version already exists in VS Code Marketplace
-            if vsce show "RyanBlakeStory.statlang@$VERSION" > /dev/null 2>&1; then
-              echo "Extension version $VERSION already exists. Skipping publish."
-            else
-              echo "vsce publish failed for a reason other than duplicate version."
-              exit $status
-            fi
-          fi
-

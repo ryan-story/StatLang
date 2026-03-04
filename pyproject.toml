@@ -140,12 +140,14 @@ python_functions = ["test_*"]
 addopts = "-v --tb=short"
 
 [tool.semantic_release]
-branch = "main"
-upload_to_pypi = true
-upload_to_release = true
 build_command = "python -m build"
 version_toml = ["pyproject.toml:project.version"]
-version_variable = ["stat_lang/__init__.py:__version__"]
-version_pattern = [
-    'vscode-extension/package.json:"version": "{version}"'
-]
+version_variables = ["stat_lang/__init__.py:__version__"]
+major_on_zero = false
+allow_zero_version = true
+
+[tool.semantic_release.branches.main]
+match = "main"
+
+[tool.semantic_release.publish]
+upload_to_vcs_release = true
